@@ -69,7 +69,6 @@ const posts = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
-    coverImage: z.string(),
     coverImageAlt: z.string(),
     pubDate: z.string().transform((str) => new Date(str)),
   }),
@@ -83,6 +82,7 @@ const posts = defineCollection({
 
     return {
       ...post,
+      coverImage: `/images/posts/${_meta.filePath.replace(/\.(md|mdx)$/i, "")}/cover.webp`,
       slug: _meta.filePath.replace(/\.(md|mdx)$/i, ""),
       mdxContent,
       toc: extractToc(source),
