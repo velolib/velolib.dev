@@ -1,6 +1,5 @@
 import { ImageResponse } from "next/og"
 
-export const runtime = "edge"
 export const revalidate = 604800 // Cache for 1 week
 
 // --- COLOR SYSTEM HELPER ---
