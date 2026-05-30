@@ -34,14 +34,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.75,
   }))
 
-  const reviewRoutes: MetadataRoute.Sitemap = allReviews
-    .filter((review) => !review.draft)
-    .map((review) => ({
-      url: toAbsoluteUrl(`/reviews/${review.slug}`),
-      lastModified: review.finishDate,
-      changeFrequency: "monthly",
-      priority: 0.7,
-    }))
+  const reviewRoutes: MetadataRoute.Sitemap = allReviews.map((review) => ({
+    url: toAbsoluteUrl(`/reviews/${review.slug}`),
+    lastModified: review.finishDate,
+    changeFrequency: "monthly",
+    priority: 0.7,
+  }))
 
   return [...staticRoutes, ...postRoutes, ...reviewRoutes]
 }

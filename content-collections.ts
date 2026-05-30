@@ -10,9 +10,13 @@ import type { MDXContent } from "mdx/types"
 import { z } from "zod"
 
 import {
+  REVIEW_ENJOYMENTS,
   REVIEW_FORMATS,
   REVIEW_GENRES,
+  REVIEW_IMPACTS,
   REVIEW_MEDIUMS,
+  REVIEW_QUALITIES,
+  REVIEW_STATUSES,
 } from "./lib/review-taxonomy"
 
 type TocEntry = {
@@ -69,6 +73,7 @@ const posts = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
+    coverImage: z.string(),
     coverImageAlt: z.string(),
     pubDate: z.string().transform((str) => new Date(str)),
   }),
@@ -82,7 +87,6 @@ const posts = defineCollection({
 
     return {
       ...post,
-      coverImage: `/images/posts/${_meta.filePath.replace(/\.(md|mdx)$/i, "")}/cover.webp`,
       slug: _meta.filePath.replace(/\.(md|mdx)$/i, ""),
       mdxContent,
       toc: extractToc(source),
@@ -97,41 +101,23 @@ const reviews = defineCollection({
   parser: "frontmatter-only",
   schema: z.object({
     title: z.string(),
+    startDate: z.coerce.date(),
+    finishDate: z.coerce.date(),
     aka: z.preprocess(
       (value) => (value == null ? [] : value),
       z.array(z.string()).default([])
     ),
-    startDate: z.coerce.date(),
-    finishDate: z.coerce.date(),
-    overallRating: z.number().min(0).max(10),
-    quality: z.enum([
-      "Gem-Gem",
-      "Gem-Mid",
-      "Gem-Slop",
-      "Mid-Gem",
-      "Mid-Mid",
-      "Mid-Slop",
-      "Slop-Gem",
-      "Slop-Mid",
-      "Slop-Slop",
-    ]),
     shortReview: z.string(),
+    poster: z.string(),
+    backdrop: z.string(),
+    overallRating: z.number().min(0).max(10),
+    quality: z.enum(REVIEW_QUALITIES),
+    enjoyment: z.enum(REVIEW_ENJOYMENTS),
+    impact: z.enum(REVIEW_IMPACTS),
+    status: z.enum(REVIEW_STATUSES),
     medium: z.enum(REVIEW_MEDIUMS),
     formats: z.array(z.enum(REVIEW_FORMATS)).min(1),
     genres: z.array(z.enum(REVIEW_GENRES)).min(1).max(3),
-    status: z.enum(["Finished", "Watching", "Dropped", "Waiting", "Canceled"]),
-    enjoyment: z.enum([
-      "Loved it",
-      "Liked it",
-      "Mixed",
-      "Meh",
-      "Didn't like it",
-      "Hated it",
-    ]),
-    impact: z.enum(["Lingering", "Memorable", "Fleeting", "Forgettable"]),
-    poster: z.string().optional(),
-    backdrop: z.string().optional(),
-    draft: z.boolean().default(false),
   }),
   transform: async ({ _meta, ...review }) => {
     const [source, mdxContent] = await Promise.all([
@@ -146,9 +132,6 @@ const reviews = defineCollection({
     return {
       ...review,
       slug,
-      // If poster/backdrop are omitted from frontmatter, infer from slug
-      poster: review.poster ?? `/images/reviews/${slug}/poster.webp`,
-      backdrop: review.backdrop ?? `/images/reviews/${slug}/backdrop.webp`,
       mdxContent,
       toc: extractToc(source),
     }

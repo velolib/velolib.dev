@@ -13,21 +13,20 @@ export interface SlimReview {
   review: Pick<
     Review,
     | "title"
-    | "aka"
     | "startDate"
     | "finishDate"
+    | "aka"
+    | "shortReview"
+    | "poster"
+    | "backdrop"
     | "overallRating"
     | "quality"
-    | "shortReview"
+    | "enjoyment"
+    | "impact"
+    | "status"
     | "medium"
     | "formats"
     | "genres"
-    | "status"
-    | "enjoyment"
-    | "impact"
-    | "poster"
-    | "backdrop"
-    | "draft"
   >
 }
 
@@ -49,21 +48,20 @@ export function slimReview(review: Review): SlimReview {
     slug: review.slug,
     review: {
       title: review.title,
-      aka: review.aka,
       startDate: review.startDate,
       finishDate: review.finishDate,
+      aka: review.aka,
+      shortReview: review.shortReview,
+      poster: review.poster,
+      backdrop: review.backdrop,
       overallRating: review.overallRating,
       quality: review.quality,
-      shortReview: review.shortReview,
+      enjoyment: review.enjoyment,
+      impact: review.impact,
+      status: review.status,
       medium: review.medium,
       formats: review.formats,
       genres: review.genres,
-      status: review.status,
-      enjoyment: review.enjoyment,
-      impact: review.impact,
-      poster: review.poster,
-      backdrop: review.backdrop,
-      draft: review.draft,
     },
   }
 }

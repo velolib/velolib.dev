@@ -6,6 +6,7 @@ const nextConfig = {
   logging: {
     // browserToTerminal: true,
   },
+  allowedDevOrigins: ["localhost", "127.0.0.1"],
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
 };
 
