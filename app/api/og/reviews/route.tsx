@@ -1,4 +1,6 @@
+import { readFile } from "fs/promises"
 import { ImageResponse } from "next/og"
+import path from "path"
 
 export const revalidate = 604800 // Cache for 1 week
 
@@ -252,17 +254,11 @@ export async function GET(request: Request) {
     // Parallelize font fetching for max speed
     const [interRegular, interSemiBold, interBold, merriweatherBold] =
       await Promise.all([
-        fetch(new URL("../Inter-Regular.ttf", import.meta.url)).then((res) =>
-          res.arrayBuffer()
-        ),
-        fetch(new URL("../Inter-SemiBold.ttf", import.meta.url)).then((res) =>
-          res.arrayBuffer()
-        ),
-        fetch(new URL("../Inter-Bold.ttf", import.meta.url)).then((res) =>
-          res.arrayBuffer()
-        ),
-        fetch(new URL("../Merriweather_120pt-Bold.ttf", import.meta.url)).then(
-          (res) => res.arrayBuffer()
+        readFile(path.join(process.cwd(), "public/fonts/Inter-Regular.ttf")),
+        readFile(path.join(process.cwd(), "public/fonts/Inter-SemiBold.ttf")),
+        readFile(path.join(process.cwd(), "public/fonts/Inter-Bold.ttf")),
+        readFile(
+          path.join(process.cwd(), "public/fonts/Merriweather_120pt-Bold.ttf")
         ),
       ])
 
