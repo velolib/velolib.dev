@@ -18,6 +18,7 @@
     "@fontsource-variable/merriweather": "^5.2.6",
     "@icons-pack/react-simple-icons": "^13.13.0",
     "@next/mdx": "^16.2.6",
+    "@next/third-parties": "^16.2.6",
     "@tailwindcss/typography": "^0.5.19",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

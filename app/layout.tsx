@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/layout/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 import { Navigation } from "@/components/layout/navigation"
+import { GoogleTagManager } from '@next/third-parties/google'
 import {
   DEFAULT_KEYWORDS,
   SITE_DESCRIPTION,
@@ -74,6 +75,7 @@ export default function RootLayout({
         inter.variable
       )}
     >
+      <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID || ""} />
       <body>
         <TooltipProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
