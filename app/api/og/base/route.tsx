@@ -2,7 +2,8 @@ import { readFile } from "fs/promises"
 import path from "path"
 import { ImageResponse } from "next/og"
 
-export const revalidate = 604800
+export const runtime = "nodejs"
+export const dynamic = "force-dynamic"
 
 export async function GET(request: Request) {
   try {

@@ -2,7 +2,8 @@ import { readFile } from "fs/promises"
 import { ImageResponse } from "next/og"
 import path from "path"
 
-export const revalidate = 604800 // Cache for 1 week
+export const runtime = "nodejs"
+export const dynamic = "force-dynamic"
 
 // --- COLOR SYSTEM HELPER ---
 const COLORS: Record<string, { bg: string; border: string; text: string }> = {
