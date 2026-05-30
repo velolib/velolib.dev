@@ -226,12 +226,14 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
 
     // Dynamic Site URL for Background Images (Localhost vs Vercel Prod)
-    const protocol = process.env.NODE_ENV === "development" ? "http" : "https"
-    const host =
-      process.env.NEXT_PUBLIC_SITE_URL ||
-      process.env.VERCEL_URL ||
-      "localhost:3000"
-    const siteUrl = `${protocol}://${host}`
+    let siteUrl = "http://localhost:3000"
+    if (process.env.NEXT_PUBLIC_SITE_URL) {
+      siteUrl = process.env.NEXT_PUBLIC_SITE_URL // Already contains https://
+    } else if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+      siteUrl = `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    } else if (process.env.VERCEL_URL) {
+      siteUrl = `https://${process.env.VERCEL_URL}`
+    }
 
     // Core Data
     const slug = searchParams.get("slug")
