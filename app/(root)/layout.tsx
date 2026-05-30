@@ -1,11 +1,8 @@
-import { Geist_Mono, Inter } from "next/font/google"
 import type { Metadata } from "next"
 
-import "../globals.css"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { ThemeProvider } from "@/components/layout/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { cn } from "@/lib/utils"
 import { Navigation } from "@/components/layout/navigation"
 import { GoogleTagManager } from "@next/third-parties/google"
 import {
@@ -15,13 +12,6 @@ import {
   SITE_URL,
 } from "@/lib/seo"
 import { Analytics } from "@vercel/analytics/react"
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
-
-const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-})
 
 export const metadata: Metadata = {
   metadataBase: SITE_URL,
@@ -67,16 +57,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={cn(
-        "antialiased",
-        fontMono.variable,
-        "font-sans",
-        inter.variable
-      )}
-    >
+    <>
       <Analytics />
       <SpeedInsights />
       <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID || ""} />
@@ -88,6 +69,6 @@ export default function RootLayout({
           </ThemeProvider>
         </TooltipProvider>
       </body>
-    </html>
+    </>
   )
 }
