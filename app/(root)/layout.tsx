@@ -2,6 +2,7 @@ import { Geist_Mono, Inter } from "next/font/google"
 import type { Metadata } from "next"
 
 import "../globals.css"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { ThemeProvider } from "@/components/layout/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
@@ -77,6 +78,7 @@ export default function RootLayout({
       )}
     >
       <Analytics />
+      <SpeedInsights />
       <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID || ""} />
       <body>
         <TooltipProvider>
