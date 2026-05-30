@@ -228,8 +228,8 @@ export async function GET(request: Request) {
     // Dynamic Site URL for Background Images (Localhost vs Vercel Prod)
     const protocol = process.env.NODE_ENV === "development" ? "http" : "https"
     const host =
-      process.env.VERCEL_URL ||
       process.env.NEXT_PUBLIC_SITE_URL ||
+      process.env.VERCEL_URL ||
       "localhost:3000"
     const siteUrl = `${protocol}://${host}`
 
