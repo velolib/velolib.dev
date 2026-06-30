@@ -2,17 +2,10 @@
 
 import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "motion/react"
-import {
-  SiDiscord,
-  SiX,
-  SiGithub,
-  SiInstagram,
-  SiGmail,
-  SiSpotify,
-} from "@icons-pack/react-simple-icons"
 import GradientBackground from "./gradient-background"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "../ui/button"
+import { socialLinks } from '@/lib/social-links'
 
 const names = ["velo", "veloLib", "velocitize"]
 
@@ -25,47 +18,6 @@ export function Hero() {
     }, 5000)
     return () => clearInterval(interval)
   }, [])
-
-  const socialLinks = [
-    {
-      label: "GitHub",
-      href: "https://github.com/velolib",
-      icon: SiGithub,
-      color:
-        "text-[#181717] dark:text-white hover:text-[#181717] dark:hover:text-white",
-    },
-    {
-      label: "X",
-      href: "https://x.com/vlocitize",
-      icon: SiX,
-      color:
-        "text-black dark:text-white hover:text-black dark:hover:text-white",
-    },
-    {
-      label: "Discord",
-      href: "https://discord.com/users/689289283286466573",
-      icon: SiDiscord,
-      color: "text-[#5865F2] hover:text-[#5865F2]/80",
-    },
-    {
-      label: "Instagram",
-      href: "https://instagram.com/vlocitize",
-      icon: SiInstagram,
-      color: "text-[#FF0069] hover:text-[#FF0069]/80",
-    },
-    {
-      label: "Email",
-      href: "mailto:vlocitize@gmail.com",
-      icon: SiGmail,
-      color: "text-[#EA4335] hover:text-[#EA4335]/80",
-    },
-    {
-      label: "Spotify",
-      href: "https://open.spotify.com/user/le2sdqta7f8158vtb62wc1nve",
-      icon: SiSpotify,
-      color: "text-[#1ED760] hover:text-[#1ED760]/80",
-    },
-  ]
 
   return (
     <section
