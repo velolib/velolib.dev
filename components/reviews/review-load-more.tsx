@@ -196,13 +196,24 @@ function FacetMultiSelect({
   value,
   onChange,
 }: FacetMultiSelectProps) {
+  const [searchInput, setSearchInput] = useState("")
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSearchInput("")
+  }, [value])
+
+  const filteredOptions = options.filter((option) =>
+    option.toLowerCase().includes(searchInput.toLowerCase())
+  )
+
   return (
     <div className="space-y-2">
       <p className="text-xs font-medium tracking-[0.24em] text-muted-foreground uppercase">
         {label}
       </p>
       <Combobox
-        items={options}
+        items={filteredOptions}
         multiple
         value={value}
         onValueChange={(next) => onChange(Array.isArray(next) ? next : [])}
@@ -213,7 +224,11 @@ function FacetMultiSelect({
               <ComboboxChip key={item}>{item}</ComboboxChip>
             ))}
           </ComboboxValue>
-          <ComboboxChipsInput placeholder={placeholder} />
+          <ComboboxChipsInput
+            placeholder={placeholder}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+          />
         </ComboboxChips>
         <ComboboxContent>
           <ComboboxEmpty>No options found.</ComboboxEmpty>
@@ -248,6 +263,13 @@ function GroupedFacetMultiSelect({
   value,
   onChange,
 }: GroupedFacetMultiSelectProps) {
+  const [searchInput, setSearchInput] = useState("")
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSearchInput("")
+  }, [value])
+
   const options = groups.flatMap((group) =>
     group.options.map((option) => `${group.label.toLowerCase()}:${option}`)
   )
@@ -259,6 +281,17 @@ function GroupedFacetMultiSelect({
       ])
     )
   ) as Record<string, string>
+
+  const filteredGroups = groups
+    .map((group) => ({
+      ...group,
+      options: group.options.filter(
+        (option) =>
+          option.toLowerCase().includes(searchInput.toLowerCase()) ||
+          group.label.toLowerCase().includes(searchInput.toLowerCase())
+      ),
+    }))
+    .filter((group) => group.options.length > 0)
 
   return (
     <div className="space-y-2">
@@ -279,12 +312,16 @@ function GroupedFacetMultiSelect({
               </ComboboxChip>
             ))}
           </ComboboxValue>
-          <ComboboxChipsInput placeholder={placeholder} />
+          <ComboboxChipsInput
+            placeholder={placeholder}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+          />
         </ComboboxChips>
         <ComboboxContent>
           <ComboboxEmpty>No options found.</ComboboxEmpty>
           <ComboboxList>
-            {groups.map((group, groupIndex) => (
+            {filteredGroups.map((group, groupIndex) => (
               <ComboboxGroup key={group.label}>
                 <ComboboxLabel>{group.label}</ComboboxLabel>
                 {group.options.map((option) => {
@@ -296,7 +333,7 @@ function GroupedFacetMultiSelect({
                     </ComboboxItem>
                   )
                 })}
-                {groupIndex < groups.length - 1 && <ComboboxSeparator />}
+                {groupIndex < filteredGroups.length - 1 && <ComboboxSeparator />}
               </ComboboxGroup>
             ))}
           </ComboboxList>
