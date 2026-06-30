@@ -46,7 +46,7 @@ const keystaticComponents = {
 }
 
 export default config({
-  storage: {
+  storage: process.env.NODE_ENV === "development" ? { kind: "local"} : {
     kind: "github",
     repo: {
       owner: "velolib",
