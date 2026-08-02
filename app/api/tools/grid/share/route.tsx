@@ -61,8 +61,12 @@ export async function POST(request: NextRequest) {
       params: [JSON.stringify(gridData), expiresAt.toString()],
     });
 
-    const dbId = response.result?.[0]?.results?.[0]?.id as number;
-    const shareId = hashids.encode(dbId);
+    const row = response.result?.[0]?.results?.[0] as { id: number } | undefined;
+    const dbId = row?.id;
+
+    if (dbId === undefined) {
+      throw new Error("D1 failed to return an ID");
+    }    const shareId = hashids.encode(dbId);
 
     if (!shareId) {
       throw new Error("D1 failed to return an ID");
