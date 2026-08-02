@@ -343,6 +343,36 @@ function GroupedFacetMultiSelect({
   )
 }
 
+function transformIndexToNumber(index: number, sortMode: SortMode, totalCount: number) {
+  let number = index + 1
+  switch (sortMode) {
+    case "finish-desc":
+      number = totalCount - index
+      break
+    case "finish-asc":
+      number = index + 1
+      break
+    case "start-desc":
+      number = totalCount - index
+      break
+    case "start-asc":
+      number = index + 1
+      break
+    case "curated":
+      number = index + 1
+      break
+    case "title-asc":
+      number = index + 1
+      break
+    case "best-match":
+      number = index + 1
+      break
+    default:
+      number = index + 1
+  }
+  return number
+}
+
 interface ReviewLoadMoreProps {
   allReviews: SlimReview[]
   initialVisibleCount: number
@@ -877,11 +907,12 @@ export function ReviewLoadMore({
       </div>
 
       <div className="grid items-stretch gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8 2xl:grid-cols-4">
-        {visibleReviews.map((review) => (
+        {visibleReviews.map((review, index) => (
           <ReviewCard
             key={review.slug}
             slug={review.slug}
             review={review.review}
+            number={transformIndexToNumber(index, effectiveSortMode, filteredSortedReviews.length)}
           />
         ))}
       </div>

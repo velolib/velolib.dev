@@ -8,6 +8,7 @@ const nextConfig = {
   },
   allowedDevOrigins: ["localhost", "127.0.0.1"],
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
+  serverExternalPackages: ["@takumi-rs/core"],
   redirects: async () => [
     {
       source: "/socials/github",

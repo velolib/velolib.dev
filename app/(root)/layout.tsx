@@ -12,6 +12,7 @@ import {
   SITE_URL,
 } from "@/lib/seo"
 import { Analytics } from "@vercel/analytics/react"
+import { Toaster } from "@/components/ui/sonner"
 
 export const metadata: Metadata = {
   metadataBase: SITE_URL,
@@ -64,6 +65,7 @@ export default function RootLayout({
       <body>
         <TooltipProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <Toaster />
             <Navigation />
             {children}
           </ThemeProvider>

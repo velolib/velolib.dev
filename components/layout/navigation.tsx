@@ -6,23 +6,50 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuItem,
+  NavigationMenuTrigger,
+  NavigationMenuContent,
 } from "@/components/ui/navigation-menu"
 import { ModeToggle } from "./mode-toggle"
-import { Drawer, DrawerContent, DrawerTrigger } from "../ui/drawer"
 import { Button } from "../ui/button"
-import { Menu } from "lucide-react"
+import { BookOpenText, Brush, ChevronDownIcon, Code, Grid3X3, House, Menu, NotebookPen } from "lucide-react"
 import Link from "next/link"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible'
+import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet'
 
 export interface NavigationProps {
   className?: string
 }
 
+function ListItem({
+  title,
+  children,
+  href,
+  icon: Icon,
+  ...props
+}: React.ComponentPropsWithoutRef<"li"> & { href: string; icon: React.ComponentType<{ className?: string }>; title: string }) {
+  return (
+    <li {...props}>
+      <NavigationMenuLink render={(
+        <Link href={href}>
+          <div className="flex flex-col gap-1 text-sm">
+            <div className="leading-none font-medium flex items-center justify-start gap-1.5"> <Icon className="size-4.5" /> {title}</div>
+            <div className="line-clamp-2 text-muted-foreground">{children}</div>
+          </div>
+        </Link>)}
+        />
+    </li>
+  )
+}
+
 export function Navigation({ className }: NavigationProps) {
   const navItems = [
-    { label: "Home", id: "home", href: "/#home" },
-    { label: "Blog", id: "blog", href: "/blog" },
-    { label: "Reviews", id: "reviews", href: "/reviews" },
-    { label: "Projects", id: "projects", href: "/projects" },
+    { label: "Home", id: "home", href: "/#home", icon: House },
+    { label: "Blog", id: "blog", href: "/blog", icon: BookOpenText },
+    { label: "Reviews", id: "reviews", href: "/reviews", icon: NotebookPen },
+    { label: "Projects", id: "projects", href: "/projects", icon: Code },
+    { label: "Tools", id: "tools", icon: Brush, children: [
+      { label: "Media grid", id: "media-grid", href: "/tools/grid", description: "Create and share a grid of your favorite media.", icon: Grid3X3 },
+    ] },
   ]
 
   return (
@@ -41,40 +68,88 @@ export function Navigation({ className }: NavigationProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          <NavigationMenu className="hidden md:flex">
+          <NavigationMenu className="hidden lg:flex">
             <NavigationMenuList className="gap-1">
-              {navItems.map((item) => (
-                <NavigationMenuItem key={item.id}>
-                  <NavigationMenuLink render={<Link href={item.href} />}>
-                    {item.label}
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-              ))}
+              {navItems.map((item) => {
+                if (!item.children) {
+                  return (
+                    <NavigationMenuItem key={item.id}>
+                      <NavigationMenuLink render={<Link href={item.href} />}>
+                        <item.icon className="size-4.5" />
+                        {item.label}
+                      </NavigationMenuLink>
+                    </NavigationMenuItem>
+                  );
+                } else {
+                  return (
+                    <NavigationMenuItem key={item.id}>
+                      <NavigationMenuTrigger><item.icon className="size-4.5 mr-1.5" /> {item.label}</NavigationMenuTrigger>
+                      <NavigationMenuContent>
+                        <ul className="grid w-100 gap-2 md:w-125 md:grid-cols-2 lg:w-150">
+                          {item.children.map((child) => (
+                            <ListItem
+                              key={child.id}
+                              title={child.label}
+                              href={child.href}
+                              icon={child.icon}
+                            >
+                              {child.description}
+                            </ListItem>
+                          ))}
+                        </ul>
+                      </NavigationMenuContent>
+                    </NavigationMenuItem>
+                  );
+                }
+              })}
             </NavigationMenuList>
           </NavigationMenu>
 
           <ModeToggle />
 
-          <Drawer>
-            <DrawerTrigger asChild>
-              <Button variant="outline" className="md:hidden" size="icon">
-                <Menu className="size-4.5" />
-              </Button>
-            </DrawerTrigger>
-            <DrawerContent className="p-4">
-              <div className="mt-4 flex flex-col gap-2">
-                {navItems.map((item) => (
-                  <Button
-                    key={item.id}
-                    variant="ghost"
-                    render={<Link href={item.href} />}
-                  >
-                    {item.label}
-                  </Button>
-                ))}
+          <Sheet>
+            <SheetTrigger render={<Button variant="outline" className="lg:hidden" size="icon">
+              <Menu className="size-4.5" />
+            </Button>} />
+            <SheetContent className="p-4" side="left">
+              <div className="flex flex-col gap-2">
+                {navItems.map((item) => {
+                  if (!item.children) {
+                    return (
+                      <Button
+                        key={item.id}
+                        variant="ghost"
+                        render={<Link href={item.href} />}
+                        className="w-full justify-start items-center"
+                      >
+                        <item.icon className="size-4.5" />
+                        {item.label}
+                      </Button>
+                    );
+                  }
+                  return (
+                    <Collapsible key={item.id}>
+                      <CollapsibleTrigger render={<Button variant="ghost" className="w-full"><item.icon className="size-4.5" /> {item.label}<ChevronDownIcon className="ml-auto group-data-panel-open/button:rotate-180" /></Button>} />
+                      <CollapsibleContent className="flex flex-col gap-2 pl-4">
+                        {item.children.map((child) => (
+                          <Button
+                            key={child.id}
+                            variant="ghost"
+                            render={<Link href={child.href} />}
+                            nativeButton={false}
+                            className="w-full justify-start items-center"
+                          >
+                            <child.icon className="size-4.5" />
+                            {child.label}
+                          </Button>
+                        ))}
+                      </CollapsibleContent>
+                    </Collapsible>
+                  );
+                })}
               </div>
-            </DrawerContent>
-          </Drawer>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </nav>

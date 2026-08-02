@@ -8,14 +8,16 @@ import ReviewBadge from "./review-badge"
 import { Card, CardDescription, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { formatDateRange } from "@/lib/utils"
+import { Badge } from '../ui/badge'
 
 interface ReviewCardProps {
   slug: string
   review: SlimReview["review"]
+  number?: number
   className?: string
 }
 
-export function ReviewCard({ slug, review, className }: ReviewCardProps) {
+export function ReviewCard({ slug, review, number, className }: ReviewCardProps) {
   const formats = review.formats ?? []
   const genres = review.genres ?? []
 
@@ -31,6 +33,10 @@ export function ReviewCard({ slug, review, className }: ReviewCardProps) {
             className="block aspect-[0.68] w-full object-cover transition-transform group-hover:scale-105"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
+
+          <Badge className="absolute top-4 left-4 z-10">
+            {number ? `#${number}` : null}
+          </Badge>
 
           <div className="absolute inset-0 bg-linear-to-t from-black/80 to-transparent to-60%" />
 
