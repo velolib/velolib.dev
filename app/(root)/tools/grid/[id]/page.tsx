@@ -1,24 +1,24 @@
-import { notFound } from 'next/navigation';
-import { getSharedGrid } from '@/lib/grid';
-import { SectionShell } from '@/components/shared/section-shell';
-import { GridData } from '@/lib/grid';
-import { ReadonlyMediaCard } from '@/components/tools/grid/readonly-media-card';
-import { ShareDialog } from '@/components/tools/grid/share-dialog';
-import type { Metadata } from "next";
-import GradientBackground from '@/components/layout/gradient-background';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { notFound } from "next/navigation"
+import { getSharedGrid } from "@/lib/grid"
+import { SectionShell } from "@/components/shared/section-shell"
+import { GridData } from "@/lib/grid"
+import { ReadonlyMediaCard } from "@/components/tools/grid/readonly-media-card"
+import { ShareDialog } from "@/components/tools/grid/share-dialog"
+import type { Metadata } from "next"
+import GradientBackground from "@/components/layout/gradient-background"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
 interface SharePageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string }>
 }
 
 export default async function SharePage({ params }: SharePageProps) {
-  const { id } = await params;
+  const { id } = await params
 
-  const sharedGrid = await getSharedGrid(id);
+  const sharedGrid = await getSharedGrid(id)
 
   if (!sharedGrid) {
-    notFound();
+    notFound()
   }
 
   const gridData = JSON.parse(sharedGrid.data) as GridData
@@ -31,14 +31,14 @@ export default async function SharePage({ params }: SharePageProps) {
         id="share"
         eyebrow={id}
         title="Shared grid"
-        description={`Expires at ${new Date(sharedGrid.expires_at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}`}
-        buttonText='Make your own'
-        buttonHref='/tools/grid'
+        description={`Expires at ${new Date(sharedGrid.expires_at).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}`}
+        buttonText="Make your own"
+        buttonHref="/tools/grid"
       >
         <GradientBackground />
         <ShareDialog id={id} gridData={gridData} />
         <ScrollArea className="w-full">
-          <div className="grid grid-cols-3 gap-4 min-w-200 sm:min-w-300 lg:min-w-full">
+          <div className="grid min-w-200 grid-cols-3 gap-4 sm:min-w-300 lg:min-w-full">
             {gridData.medias.map((media, index) => (
               <div key={index}>
                 {media ? (
@@ -52,7 +52,9 @@ export default async function SharePage({ params }: SharePageProps) {
                     showLabel={gridData.showLabels}
                     isSquare={gridData.isSquare}
                   />
-                ) : <ReadonlyMediaCard isSquare={gridData.isSquare} />}
+                ) : (
+                  <ReadonlyMediaCard isSquare={gridData.isSquare} />
+                )}
               </div>
             ))}
           </div>
@@ -60,18 +62,17 @@ export default async function SharePage({ params }: SharePageProps) {
         </ScrollArea>
       </SectionShell>
     </main>
-
-  );
+  )
 }
 
-export async function generateMetadata(
-  { params }: SharePageProps
-): Promise<Metadata> {
-  const { id } = await params;
+export async function generateMetadata({
+  params,
+}: SharePageProps): Promise<Metadata> {
+  const { id } = await params
 
-  const sharedGrid = await getSharedGrid(id);
+  const sharedGrid = await getSharedGrid(id)
 
-  const gridData = sharedGrid ? JSON.parse(sharedGrid.data) as GridData : null;
+  const gridData = sharedGrid ? (JSON.parse(sharedGrid.data) as GridData) : null
 
   return {
     title: "Shared grid",
@@ -90,5 +91,5 @@ export async function generateMetadata(
       card: "summary_large_image",
       images: [`/api/og/tools/grid/${id}`],
     },
-  };
+  }
 }

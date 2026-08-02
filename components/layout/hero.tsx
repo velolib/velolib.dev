@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "motion/react"
 import GradientBackground from "./gradient-background"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "../ui/button"
-import { socialLinks } from '@/lib/social-links'
+import { socialLinks } from "@/lib/social-links"
 
 const names = ["velo", "veloLib", "velocitize"]
 

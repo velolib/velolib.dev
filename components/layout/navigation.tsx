@@ -11,10 +11,23 @@ import {
 } from "@/components/ui/navigation-menu"
 import { ModeToggle } from "./mode-toggle"
 import { Button } from "../ui/button"
-import { BookOpenText, Brush, ChevronDownIcon, Code, Grid3X3, House, Menu, NotebookPen } from "lucide-react"
+import {
+  BookOpenText,
+  Brush,
+  ChevronDownIcon,
+  Code,
+  Grid3X3,
+  House,
+  Menu,
+  NotebookPen,
+} from "lucide-react"
 import Link from "next/link"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible'
-import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet'
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "../ui/collapsible"
+import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet"
 
 export interface NavigationProps {
   className?: string
@@ -26,17 +39,28 @@ function ListItem({
   href,
   icon: Icon,
   ...props
-}: React.ComponentPropsWithoutRef<"li"> & { href: string; icon: React.ComponentType<{ className?: string }>; title: string }) {
+}: React.ComponentPropsWithoutRef<"li"> & {
+  href: string
+  icon: React.ComponentType<{ className?: string }>
+  title: string
+}) {
   return (
     <li {...props}>
-      <NavigationMenuLink render={(
-        <Link href={href}>
-          <div className="flex flex-col gap-1 text-sm">
-            <div className="leading-none font-medium flex items-center justify-start gap-1.5"> <Icon className="size-4.5" /> {title}</div>
-            <div className="line-clamp-2 text-muted-foreground">{children}</div>
-          </div>
-        </Link>)}
-        />
+      <NavigationMenuLink
+        render={
+          <Link href={href}>
+            <div className="flex flex-col gap-1 text-sm">
+              <div className="flex items-center justify-start gap-1.5 leading-none font-medium">
+                {" "}
+                <Icon className="size-4.5" /> {title}
+              </div>
+              <div className="line-clamp-2 text-muted-foreground">
+                {children}
+              </div>
+            </div>
+          </Link>
+        }
+      />
     </li>
   )
 }
@@ -47,9 +71,20 @@ export function Navigation({ className }: NavigationProps) {
     { label: "Blog", id: "blog", href: "/blog", icon: BookOpenText },
     { label: "Reviews", id: "reviews", href: "/reviews", icon: NotebookPen },
     { label: "Projects", id: "projects", href: "/projects", icon: Code },
-    { label: "Tools", id: "tools", icon: Brush, children: [
-      { label: "Media grid", id: "media-grid", href: "/tools/grid", description: "Create and share a grid of your favorite media.", icon: Grid3X3 },
-    ] },
+    {
+      label: "Tools",
+      id: "tools",
+      icon: Brush,
+      children: [
+        {
+          label: "Media grid",
+          id: "media-grid",
+          href: "/tools/grid",
+          description: "Create and share a grid of your favorite media.",
+          icon: Grid3X3,
+        },
+      ],
+    },
   ]
 
   return (
@@ -79,11 +114,13 @@ export function Navigation({ className }: NavigationProps) {
                         {item.label}
                       </NavigationMenuLink>
                     </NavigationMenuItem>
-                  );
+                  )
                 } else {
                   return (
                     <NavigationMenuItem key={item.id}>
-                      <NavigationMenuTrigger><item.icon className="size-4.5 mr-1.5" /> {item.label}</NavigationMenuTrigger>
+                      <NavigationMenuTrigger>
+                        <item.icon className="mr-1.5 size-4.5" /> {item.label}
+                      </NavigationMenuTrigger>
                       <NavigationMenuContent>
                         <ul className="grid w-100 gap-2 md:w-125 md:grid-cols-2 lg:w-150">
                           {item.children.map((child) => (
@@ -99,7 +136,7 @@ export function Navigation({ className }: NavigationProps) {
                         </ul>
                       </NavigationMenuContent>
                     </NavigationMenuItem>
-                  );
+                  )
                 }
               })}
             </NavigationMenuList>
@@ -108,9 +145,13 @@ export function Navigation({ className }: NavigationProps) {
           <ModeToggle />
 
           <Sheet>
-            <SheetTrigger render={<Button variant="outline" className="lg:hidden" size="icon">
-              <Menu className="size-4.5" />
-            </Button>} />
+            <SheetTrigger
+              render={
+                <Button variant="outline" className="lg:hidden" size="icon">
+                  <Menu className="size-4.5" />
+                </Button>
+              }
+            />
             <SheetContent className="p-4" side="left">
               <div className="flex flex-col gap-2">
                 {navItems.map((item) => {
@@ -120,16 +161,23 @@ export function Navigation({ className }: NavigationProps) {
                         key={item.id}
                         variant="ghost"
                         render={<Link href={item.href} />}
-                        className="w-full justify-start items-center"
+                        className="w-full items-center justify-start"
                       >
                         <item.icon className="size-4.5" />
                         {item.label}
                       </Button>
-                    );
+                    )
                   }
                   return (
                     <Collapsible key={item.id}>
-                      <CollapsibleTrigger render={<Button variant="ghost" className="w-full"><item.icon className="size-4.5" /> {item.label}<ChevronDownIcon className="ml-auto group-data-panel-open/button:rotate-180" /></Button>} />
+                      <CollapsibleTrigger
+                        render={
+                          <Button variant="ghost" className="w-full">
+                            <item.icon className="size-4.5" /> {item.label}
+                            <ChevronDownIcon className="ml-auto group-data-panel-open/button:rotate-180" />
+                          </Button>
+                        }
+                      />
                       <CollapsibleContent className="flex flex-col gap-2 pl-4">
                         {item.children.map((child) => (
                           <Button
@@ -137,7 +185,7 @@ export function Navigation({ className }: NavigationProps) {
                             variant="ghost"
                             render={<Link href={child.href} />}
                             nativeButton={false}
-                            className="w-full justify-start items-center"
+                            className="w-full items-center justify-start"
                           >
                             <child.icon className="size-4.5" />
                             {child.label}
@@ -145,7 +193,7 @@ export function Navigation({ className }: NavigationProps) {
                         ))}
                       </CollapsibleContent>
                     </Collapsible>
-                  );
+                  )
                 })}
               </div>
             </SheetContent>

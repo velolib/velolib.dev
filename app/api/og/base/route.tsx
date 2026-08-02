@@ -1,6 +1,6 @@
 import { readFile } from "fs/promises"
 import path from "path"
-import { ImageResponse } from "takumi-js/response";
+import { ImageResponse } from "takumi-js/response"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"

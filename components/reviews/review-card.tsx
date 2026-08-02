@@ -8,7 +8,7 @@ import ReviewBadge from "./review-badge"
 import { Card, CardDescription, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { formatDateRange } from "@/lib/utils"
-import { Badge } from '../ui/badge'
+import { Badge } from "../ui/badge"
 
 interface ReviewCardProps {
   slug: string
@@ -17,7 +17,12 @@ interface ReviewCardProps {
   className?: string
 }
 
-export function ReviewCard({ slug, review, number, className }: ReviewCardProps) {
+export function ReviewCard({
+  slug,
+  review,
+  number,
+  className,
+}: ReviewCardProps) {
   const formats = review.formats ?? []
   const genres = review.genres ?? []
 

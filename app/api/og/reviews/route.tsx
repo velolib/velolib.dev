@@ -1,5 +1,5 @@
 import { readFile } from "fs/promises"
-import { ImageResponse } from "takumi-js/response";
+import { ImageResponse } from "takumi-js/response"
 import path from "path"
 
 export const runtime = "nodejs"

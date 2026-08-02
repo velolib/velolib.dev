@@ -1,68 +1,76 @@
 "use client"
 
-import GradientBackground from '@/components/layout/gradient-background';
-import { MediaCard } from '@/components/tools/grid/media-card';
-import { SearchDialog } from '@/components/tools/grid/search-dialog';
-import { SectionShell } from '@/components/shared/section-shell';
-import { Button } from "@/components/ui/button";
-import { Card } from '@/components/ui/card';
-import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel, FieldSet, FieldTitle } from '@/components/ui/field';
-import { Switch } from '@/components/ui/switch';
-import { GridData, MediaData } from '@/lib/grid';
-import axios from 'axios';
-import { useRouter } from 'next/navigation';
-import { useCallback, useState } from 'react';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { Share2 } from 'lucide-react';
+import GradientBackground from "@/components/layout/gradient-background"
+import { MediaCard } from "@/components/tools/grid/media-card"
+import { SearchDialog } from "@/components/tools/grid/search-dialog"
+import { SectionShell } from "@/components/shared/section-shell"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldSet,
+  FieldTitle,
+} from "@/components/ui/field"
+import { Switch } from "@/components/ui/switch"
+import { GridData, MediaData } from "@/lib/grid"
+import axios from "axios"
+import { useRouter } from "next/navigation"
+import { useCallback, useState } from "react"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { Share2 } from "lucide-react"
 
-const INITIAL_GRID: (MediaData | null)[] = Array(9).fill(null);
+const INITIAL_GRID: (MediaData | null)[] = Array(9).fill(null)
 
 export function GridMaker() {
-  const [medias, setMedias] = useState<(MediaData | null)[]>(INITIAL_GRID);
-  const [showTitles, setShowTitles] = useState(true);
-  const [showLabels, setShowLabels] = useState(true);
-  const [isSquare, setIsSquare] = useState(true);
-  const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
-  const [sharing, setSharing] = useState(false);
-  const [error, setError] = useState('');
+  const [medias, setMedias] = useState<(MediaData | null)[]>(INITIAL_GRID)
+  const [showTitles, setShowTitles] = useState(true)
+  const [showLabels, setShowLabels] = useState(true)
+  const [isSquare, setIsSquare] = useState(true)
+  const [selectedSlot, setSelectedSlot] = useState<number | null>(null)
+  const [sharing, setSharing] = useState(false)
+  const [error, setError] = useState("")
 
-  const router = useRouter();
+  const router = useRouter()
 
   const handleSelectMedia = useCallback((slot: number, show: MediaData) => {
     setMedias((prev) => {
-      const updated = [...prev];
-      updated[slot] = show;
-      return updated;
-    });
-    setSelectedSlot(null);
-  }, []);
+      const updated = [...prev]
+      updated[slot] = show
+      return updated
+    })
+    setSelectedSlot(null)
+  }, [])
 
   const handleRemoveMedia = useCallback((slot: number) => {
     setMedias((prev) => {
-      const updated = [...prev];
-      updated[slot] = null;
-      return updated;
-    });
-  }, []);
+      const updated = [...prev]
+      updated[slot] = null
+      return updated
+    })
+  }, [])
 
   const handleUpdateLabel = useCallback((slot: number, label: string) => {
     setMedias((prev) => {
-      const updated = [...prev];
+      const updated = [...prev]
       if (updated[slot]) {
-        updated[slot] = { ...updated[slot]!, label };
+        updated[slot] = { ...updated[slot]!, label }
       }
-      return updated;
-    });
-  }, []);
+      return updated
+    })
+  }, [])
 
   const handleShare = async () => {
     if (!medias.some((media) => media !== null)) {
-      setError('Add at least one media to share');
-      return;
+      setError("Add at least one media to share")
+      return
     }
 
-    setSharing(true);
-    setError('');
+    setSharing(true)
+    setError("")
 
     try {
       const gridData: GridData = {
@@ -71,21 +79,20 @@ export function GridMaker() {
         showLabels,
         isSquare,
         createdAt: Date.now(),
-      };
+      }
 
-      const response = await axios.post('/api/tools/grid/share', gridData);
-      const { shareId } = response.data;
+      const response = await axios.post("/api/tools/grid/share", gridData)
+      const { shareId } = response.data
       // console.log('Share created with ID:', shareId);
 
-      router.push(`/tools/grid/${shareId}`);
-
+      router.push(`/tools/grid/${shareId}`)
     } catch (err) {
-      setError('Failed to create share');
-      console.error(err);
+      setError("Failed to create share")
+      console.error(err)
     } finally {
-      setSharing(false);
+      setSharing(false)
     }
-  };
+  }
 
   return (
     <main className="relative h-[calc(100dvh-var(--nav-height))] snap-y snap-proximity overflow-x-hidden overflow-y-auto scroll-smooth">
@@ -96,15 +103,17 @@ export function GridMaker() {
         description="Create a 3×3 grid of your favorite media and share it with others."
       >
         <GradientBackground />
-        <Card className="p-6 flex flex-wrap gap-6">
+        <Card className="flex flex-wrap gap-6 p-6">
           <FieldGroup>
             <FieldSet>
-              <FieldGroup className="flex flex-col md:flex-row gap-6">
+              <FieldGroup className="flex flex-col gap-6 md:flex-row">
                 <FieldLabel htmlFor="showTitles">
                   <Field orientation="horizontal">
                     <FieldContent>
                       <FieldTitle>Show Titles</FieldTitle>
-                      <FieldDescription>Toggle to show or hide titles of the media in the grid.</FieldDescription>
+                      <FieldDescription>
+                        Toggle to show or hide titles of the media in the grid.
+                      </FieldDescription>
                     </FieldContent>
                     <Switch
                       id="showTitles"
@@ -117,7 +126,9 @@ export function GridMaker() {
                   <Field orientation="horizontal">
                     <FieldContent>
                       <FieldTitle>Show Labels</FieldTitle>
-                      <FieldDescription>Toggle to show or hide labels of the media in the grid.</FieldDescription>
+                      <FieldDescription>
+                        Toggle to show or hide labels of the media in the grid.
+                      </FieldDescription>
                     </FieldContent>
                     <Switch
                       id="showLabels"
@@ -130,7 +141,9 @@ export function GridMaker() {
                   <Field orientation="horizontal">
                     <FieldContent>
                       <FieldTitle>Square Grid</FieldTitle>
-                      <FieldDescription>Toggle to make the grid square or use a 2:3 ratio.</FieldDescription>
+                      <FieldDescription>
+                        Toggle to make the grid square or use a 2:3 ratio.
+                      </FieldDescription>
                     </FieldContent>
                     <Switch
                       id="isSquare"
@@ -143,7 +156,7 @@ export function GridMaker() {
             </FieldSet>
           </FieldGroup>
           {error && (
-            <Card className="bg-destructive border-destructive text-white/90 rounded-lg p-4 text-sm w-full">
+            <Card className="w-full rounded-lg border-destructive bg-destructive p-4 text-sm text-white/90">
               {error}
             </Card>
           )}
@@ -153,12 +166,12 @@ export function GridMaker() {
             className="w-full"
           >
             <Share2 className="size-4.5" />
-            {sharing ? 'Creating share...' : 'Share Grid'}
+            {sharing ? "Creating share..." : "Share Grid"}
           </Button>
         </Card>
         {/* Grid */}
         <ScrollArea className="w-full">
-          <div className="grid grid-cols-3 gap-4 min-w-200 sm:min-w-300 lg:min-w-full">
+          <div className="grid min-w-200 grid-cols-3 gap-4 sm:min-w-300 lg:min-w-full">
             {medias.map((media, idx) => (
               <div key={idx} onClick={() => !media && setSelectedSlot(idx)}>
                 <MediaCard
@@ -186,5 +199,5 @@ export function GridMaker() {
         />
       </SectionShell>
     </main>
-  );
+  )
 }

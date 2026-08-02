@@ -333,7 +333,9 @@ function GroupedFacetMultiSelect({
                     </ComboboxItem>
                   )
                 })}
-                {groupIndex < filteredGroups.length - 1 && <ComboboxSeparator />}
+                {groupIndex < filteredGroups.length - 1 && (
+                  <ComboboxSeparator />
+                )}
               </ComboboxGroup>
             ))}
           </ComboboxList>
@@ -343,7 +345,11 @@ function GroupedFacetMultiSelect({
   )
 }
 
-function transformIndexToNumber(index: number, sortMode: SortMode, totalCount: number) {
+function transformIndexToNumber(
+  index: number,
+  sortMode: SortMode,
+  totalCount: number
+) {
   let number = index + 1
   switch (sortMode) {
     case "finish-desc":
@@ -912,7 +918,11 @@ export function ReviewLoadMore({
             key={review.slug}
             slug={review.slug}
             review={review.review}
-            number={transformIndexToNumber(index, effectiveSortMode, filteredSortedReviews.length)}
+            number={transformIndexToNumber(
+              index,
+              effectiveSortMode,
+              filteredSortedReviews.length
+            )}
           />
         ))}
       </div>

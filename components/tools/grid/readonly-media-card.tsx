@@ -1,17 +1,17 @@
-import { cn } from '@/lib/utils';
-import Image from 'next/image';
-import { buttonVariants } from '@/components/ui/button';
-import Link from 'next/link';
+import { cn } from "@/lib/utils"
+import Image from "next/image"
+import { buttonVariants } from "@/components/ui/button"
+import Link from "next/link"
 
 interface ReadonlyMediaCardProps {
-  id?: string;
-  type?: string;
-  posterUrl?: string;
-  title?: string;
-  label?: string;
-  showTitle?: boolean;
-  showLabel?: boolean;
-  isSquare?: boolean;
+  id?: string
+  type?: string
+  posterUrl?: string
+  title?: string
+  label?: string
+  showTitle?: boolean
+  showLabel?: boolean
+  isSquare?: boolean
 }
 
 export function ReadonlyMediaCard({
@@ -27,9 +27,13 @@ export function ReadonlyMediaCard({
   if (!posterUrl && !title && !label) {
     return (
       <div
-        className={cn(buttonVariants({ variant: "outline" }), "group relative w-full overflow-hidden rounded-2xl h-full pointer-events-none", isSquare ? "aspect-square" : "aspect-2/3")}
+        className={cn(
+          buttonVariants({ variant: "outline" }),
+          "group pointer-events-none relative h-full w-full overflow-hidden rounded-2xl",
+          isSquare ? "aspect-square" : "aspect-2/3"
+        )}
       >
-        <div className="flex items-center justify-center h-full">
+        <div className="flex h-full items-center justify-center">
           {/* <span className="text-3xl font-light">
             +
           </span> */}
@@ -42,16 +46,24 @@ export function ReadonlyMediaCard({
   if (id) {
     switch (type) {
       case "movie":
-        link = `https://www.themoviedb.org/movie/${id}`;
-        break;
+        link = `https://www.themoviedb.org/movie/${id}`
+        break
       case "tv":
-        link = `https://www.themoviedb.org/tv/${id}`;
-        break;
+        link = `https://www.themoviedb.org/tv/${id}`
+        break
     }
   }
 
   return (
-    <Link href={link} target="_blank" rel="noopener noreferrer" className={cn("relative block w-full overflow-hidden rounded-lg", isSquare ? "aspect-square" : "aspect-2/3")}>
+    <Link
+      href={link}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={cn(
+        "relative block w-full overflow-hidden rounded-lg",
+        isSquare ? "aspect-square" : "aspect-2/3"
+      )}
+    >
       <Image
         unoptimized
         width={600}
@@ -63,7 +75,7 @@ export function ReadonlyMediaCard({
       />
 
       {(title || label) && (
-        <div className="absolute bottom-0 left-0 right-0 flex flex-col items-center gap-1 bg-black/60 p-2 text-center">
+        <div className="absolute right-0 bottom-0 left-0 flex flex-col items-center gap-1 bg-black/60 p-2 text-center">
           {showTitle && (
             <p className="line-clamp-2 text-sm font-semibold text-white">
               {title}
@@ -71,15 +83,17 @@ export function ReadonlyMediaCard({
           )}
 
           {showLabel && (
-            <p className={cn(
-              "text-white w-full text-center px-6",
-              showTitle ? "text-xs" : "text-sm font-semibold"
-            )}>
+            <p
+              className={cn(
+                "w-full px-6 text-center text-white",
+                showTitle ? "text-xs" : "text-sm font-semibold"
+              )}
+            >
               {label}
             </p>
           )}
         </div>
       )}
     </Link>
-  );
+  )
 }

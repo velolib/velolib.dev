@@ -1,29 +1,23 @@
 /* eslint-disable @next/next/no-img-element */
-import { ImageResponse } from "takumi-js/response";
+import { ImageResponse } from "takumi-js/response"
 
-import { getSharedGrid } from "@/lib/grid";
-import type { GridData } from "@/lib/grid";
-
+import { getSharedGrid } from "@/lib/grid"
+import type { GridData } from "@/lib/grid"
 
 interface Media {
-  poster: string;
-  title?: string;
-  label?: string;
+  poster: string
+  title?: string
+  label?: string
 }
 
 interface OgGridProps {
-  medias: (Media | null)[];
-  showTitles: boolean;
-  showLabels: boolean;
-  isSquare: boolean;
+  medias: (Media | null)[]
+  showTitles: boolean
+  showLabels: boolean
+  isSquare: boolean
 }
 
-function OgGrid({
-  medias,
-  showTitles,
-  showLabels,
-  isSquare,
-}: OgGridProps) {
+function OgGrid({ medias, showTitles, showLabels, isSquare }: OgGridProps) {
   return (
     <div
       style={{
@@ -31,9 +25,7 @@ function OgGrid({
         height: "100%",
         display: "grid",
         gridTemplateColumns: "repeat(3,1fr)",
-gridTemplateRows: isSquare
-  ? "repeat(3,1fr)"
-  : "repeat(3,2fr)",
+        gridTemplateRows: isSquare ? "repeat(3,1fr)" : "repeat(3,2fr)",
         backgroundColor: "#000",
         position: "relative",
       }}
@@ -150,74 +142,69 @@ gridTemplateRows: isSquare
                 fontSize: 56,
                 fontWeight: 300,
               }}
-            >
-              
-            </div>
+            ></div>
           )}
         </div>
       ))}
     </div>
-  );
+  )
 }
 
-export const runtime = "nodejs";
+export const runtime = "nodejs"
 
 export async function GET(
   _: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params;
+  const { id } = await params
 
-  const shared = await getSharedGrid(id);
+  const shared = await getSharedGrid(id)
 
   if (!shared) {
-    return new Response("Not found", { status: 404 });
+    return new Response("Not found", { status: 404 })
   }
 
-  const grid = JSON.parse(shared.data) as GridData;
+  const grid = JSON.parse(shared.data) as GridData
 
   const medias = await Promise.all(
     grid.medias.map(async (media) => {
-      if (!media) return null;
+      if (!media) return null
 
       try {
-        const res = await fetch(media.posterUrl);
+        const res = await fetch(media.posterUrl)
 
-        if (!res.ok) throw new Error();
+        if (!res.ok) throw new Error()
 
-        const contentType =
-          res.headers.get("content-type") ?? "image/jpeg";
+        const contentType = res.headers.get("content-type") ?? "image/jpeg"
 
-        const bytes = await res.arrayBuffer();
+        const bytes = await res.arrayBuffer()
 
         return {
           poster: `data:${contentType};base64,${Buffer.from(bytes).toString("base64")}`,
           title: media.title,
           label: media.label,
-        };
+        }
       } catch {
         return {
           poster: "",
           title: media.title,
           label: media.label,
-        };
+        }
       }
     })
-  );
+  )
 
   return new ImageResponse(
-    (
-      <OgGrid
-        medias={medias}
-        showTitles={grid.showTitles}
-        showLabels={grid.showLabels}
-        isSquare={grid.isSquare}
-      />
-    ),
+    <OgGrid
+      medias={medias}
+      showTitles={grid.showTitles}
+      showLabels={grid.showLabels}
+      isSquare={grid.isSquare}
+    />,
     {
       width: 1080,
       height: grid.isSquare ? 1080 : 1620,
-      format: "png"
+      format: "png",
     }
-  );  
+  )
 }

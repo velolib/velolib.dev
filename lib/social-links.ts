@@ -1,4 +1,11 @@
-import { SiDiscord, SiGithub, SiGmail, SiInstagram, SiSpotify, SiX } from '@icons-pack/react-simple-icons';
+import {
+  SiDiscord,
+  SiGithub,
+  SiGmail,
+  SiInstagram,
+  SiSpotify,
+  SiX,
+} from "@icons-pack/react-simple-icons"
 
 export const socialLinks = [
   {
@@ -14,8 +21,7 @@ export const socialLinks = [
     source: "/socials/x",
     href: "https://x.com/vlocitize",
     icon: SiX,
-    color:
-      "text-black dark:text-white hover:text-black dark:hover:text-white",
+    color: "text-black dark:text-white hover:text-black dark:hover:text-white",
   },
   {
     label: "Discord",

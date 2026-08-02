@@ -1,98 +1,96 @@
-"use client";
+"use client"
 
-import { Code, Download, Share2 } from "lucide-react";
-import Image from "next/image";
-import axios from "axios";
+import { Code, Download, Share2 } from "lucide-react"
+import Image from "next/image"
+import axios from "axios"
 
-import { GridData } from "@/lib/grid";
+import { GridData } from "@/lib/grid"
 
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent, DialogTrigger
-} from "@/components/ui/dialog";
-import { toast } from "sonner";
-import { SectionShell } from '@/components/shared/section-shell';
-import { cn } from '@/lib/utils';
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { toast } from "sonner"
+import { SectionShell } from "@/components/shared/section-shell"
+import { cn } from "@/lib/utils"
 
 interface ShareDialogProps {
-  id: string;
-  gridData: GridData;
+  id: string
+  gridData: GridData
 }
 
 export function ShareDialog({ id, gridData }: ShareDialogProps) {
-  const imageUrl = `/api/og/tools/grid/${id}`;
+  const imageUrl = `/api/og/tools/grid/${id}`
 
   async function handleShareImage() {
     try {
       const response = await axios.get(imageUrl, {
         responseType: "blob",
-      });
+      })
 
-      const blob = response.data;
+      const blob = response.data
 
       const file = new File([blob], `grid-${id}.png`, {
         type: blob.type || "image/png",
-      });
+      })
 
-      if (
-        navigator.share &&
-        navigator.canShare?.({ files: [file] })
-      ) {
+      if (navigator.share && navigator.canShare?.({ files: [file] })) {
         await navigator.share({
           title: "Shared Grid",
           text: "Check out my media grid!",
           files: [file],
-        });
+        })
 
-        toast.success("Image shared.");
-        return;
+        toast.success("Image shared.")
+        return
       }
 
       // Fallback to download
-      const objectUrl = URL.createObjectURL(blob);
+      const objectUrl = URL.createObjectURL(blob)
 
-      const link = document.createElement("a");
-      link.href = objectUrl;
-      link.download = `grid-${id}.png`;
+      const link = document.createElement("a")
+      link.href = objectUrl
+      link.download = `grid-${id}.png`
 
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
 
-      URL.revokeObjectURL(objectUrl);
+      URL.revokeObjectURL(objectUrl)
 
-      toast.success("Image downloaded.");
+      toast.success("Image downloaded.")
     } catch (err) {
       if ((err as Error).name !== "AbortError") {
-        toast.error("Unable to share image.");
+        toast.error("Unable to share image.")
       }
     }
   }
 
   async function copyLink() {
-    await navigator.clipboard.writeText(window.location.href);
-    toast.success("Share link copied.");
+    await navigator.clipboard.writeText(window.location.href)
+    toast.success("Share link copied.")
   }
 
   async function copyGridData() {
-    await navigator.clipboard.writeText(
-      JSON.stringify(gridData, null, 2)
-    );
-    toast.success("Grid data copied.");
+    await navigator.clipboard.writeText(JSON.stringify(gridData, null, 2))
+    toast.success("Grid data copied.")
   }
 
   return (
     <Dialog>
-      <DialogTrigger render={<Button><Share2 /> Share </Button>} />
+      <DialogTrigger
+        render={
+          <Button>
+            <Share2 /> Share{" "}
+          </Button>
+        }
+      />
 
-      <DialogContent className="max-w-3xl w-full max-h-[90svh] flex flex-col p-0 overflow-hidden">
+      <DialogContent className="flex max-h-[90svh] w-full max-w-3xl flex-col overflow-hidden p-0">
         <SectionShell
           title="Share grid"
           description="Download the image, share a link, or copy the underlying grid data."
           eyebrow={id}
           id="share-dialog"
-          className="min-h-0 flex-1 flex flex-col"
+          className="flex min-h-0 flex-1 flex-col"
           compact
         >
           <div className="overflow-hidden rounded-xl border bg-muted">
@@ -102,7 +100,10 @@ export function ShareDialog({ id, gridData }: ShareDialogProps) {
               alt="Grid preview"
               width={1080}
               height={gridData.isSquare ? 1080 : 1620}
-              className={cn("aspect-square w-full object-cover", gridData.isSquare ? "aspect-square" : "aspect-2/3")}
+              className={cn(
+                "aspect-square w-full object-cover",
+                gridData.isSquare ? "aspect-square" : "aspect-2/3"
+              )}
               priority
             />
           </div>
@@ -124,6 +125,6 @@ export function ShareDialog({ id, gridData }: ShareDialogProps) {
           </div>
         </SectionShell>
       </DialogContent>
-    </Dialog >
-  );
+    </Dialog>
+  )
 }

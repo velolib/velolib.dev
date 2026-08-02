@@ -46,13 +46,16 @@ const keystaticComponents = {
 }
 
 export default config({
-  storage: process.env.NODE_ENV === "development" ? { kind: "local"} : {
-    kind: "github",
-    repo: {
-      owner: "velolib",
-      name: "velolib.dev",
-    },
-  },
+  storage:
+    process.env.NODE_ENV === "development"
+      ? { kind: "local" }
+      : {
+          kind: "github",
+          repo: {
+            owner: "velolib",
+            name: "velolib.dev",
+          },
+        },
   collections: {
     posts: collection({
       label: "Posts",
