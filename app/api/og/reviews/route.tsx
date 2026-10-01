@@ -1,186 +1,183 @@
 import { readFile } from "fs/promises"
 import { ImageResponse } from "takumi-js/response"
 import path from "path"
+import {
+  REVIEW_ENJOYMENTS,
+  REVIEW_FORMATS,
+  REVIEW_GENRES,
+  REVIEW_IMPACTS,
+  REVIEW_MEDIUMS,
+  REVIEW_QUALITIES,
+  REVIEW_STATUSES,
+} from "@/lib/review-taxonomy"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
 
+type ReviewMedium = (typeof REVIEW_MEDIUMS)[number]
+type ReviewFormat = (typeof REVIEW_FORMATS)[number]
+type ReviewGenre = (typeof REVIEW_GENRES)[number]
+type ReviewStatus = (typeof REVIEW_STATUSES)[number]
+type ReviewQuality = (typeof REVIEW_QUALITIES)[number]
+type ReviewEnjoyment = (typeof REVIEW_ENJOYMENTS)[number]
+type ReviewImpact = (typeof REVIEW_IMPACTS)[number]
+
 // --- COLOR SYSTEM HELPER ---
-const COLORS: Record<string, { bg: string; border: string; text: string }> = {
-  emerald: {
-    bg: "rgba(16, 185, 129, 0.1)",
-    border: "rgba(16, 185, 129, 0.3)",
-    text: "#6ee7b7",
-  },
-  cyan: {
-    bg: "rgba(6, 182, 212, 0.1)",
-    border: "rgba(6, 182, 212, 0.3)",
-    text: "#67e8f9",
-  },
-  sky: {
-    bg: "rgba(14, 165, 233, 0.1)",
-    border: "rgba(14, 165, 233, 0.3)",
-    text: "#7dd3fc",
-  },
-  amber: {
-    bg: "rgba(245, 158, 11, 0.1)",
-    border: "rgba(245, 158, 11, 0.3)",
-    text: "#fcd34d",
-  },
-  rose: {
-    bg: "rgba(244, 63, 94, 0.1)",
-    border: "rgba(244, 63, 94, 0.3)",
-    text: "#fda4af",
-  },
-  fuchsia: {
-    bg: "rgba(217, 70, 239, 0.1)",
-    border: "rgba(217, 70, 239, 0.3)",
-    text: "#f0abfc",
-  },
-  blue: {
-    bg: "rgba(59, 130, 246, 0.1)",
-    border: "rgba(59, 130, 246, 0.3)",
-    text: "#93c5fd",
-  },
-  zinc: {
-    bg: "rgba(113, 113, 122, 0.1)",
-    border: "rgba(113, 113, 122, 0.3)",
-    text: "#d4d4d8",
-  },
-  orange: {
-    bg: "rgba(249, 115, 22, 0.1)",
-    border: "rgba(249, 115, 22, 0.3)",
-    text: "#fdba74",
-  },
-  violet: {
-    bg: "rgba(139, 92, 246, 0.1)",
-    border: "rgba(139, 92, 246, 0.3)",
-    text: "#c4b5fd",
-  },
-  teal: {
-    bg: "rgba(20, 184, 166, 0.1)",
-    border: "rgba(20, 184, 166, 0.3)",
-    text: "#5eead4",
-  },
-  slate: {
-    bg: "rgba(100, 116, 139, 0.1)",
-    border: "rgba(100, 116, 139, 0.3)",
-    text: "#cbd5e1",
-  },
-  stone: {
-    bg: "rgba(120, 113, 108, 0.1)",
-    border: "rgba(120, 113, 108, 0.3)",
-    text: "#d6d3d1",
-  },
-  yellow: {
-    bg: "rgba(234, 179, 8, 0.1)",
-    border: "rgba(234, 179, 8, 0.3)",
-    text: "#fde047",
-  },
-  pink: {
-    bg: "rgba(236, 72, 153, 0.1)",
-    border: "rgba(236, 72, 153, 0.3)",
-    text: "#f9a8d4",
-  },
-  green: {
-    bg: "rgba(34, 197, 94, 0.1)",
-    border: "rgba(34, 197, 94, 0.3)",
-    text: "#86efac",
-  },
-  red: {
-    bg: "rgba(239, 68, 68, 0.1)",
-    border: "rgba(239, 68, 68, 0.3)",
-    text: "#fca5a5",
-  },
-  gray: {
-    bg: "rgba(107, 114, 128, 0.1)",
-    border: "rgba(107, 114, 128, 0.3)",
-    text: "#d1d5db",
-  },
-  default: {
-    bg: "rgba(255, 255, 255, 0.1)",
-    border: "rgba(255, 255, 255, 0.2)",
-    text: "#ffffff",
-  },
+// Each palette = Tailwind's -500 shade as RGB (for bg/border) + -300 shade
+// (for text), mirroring the dark-mode classes used in ReviewBadge.
+const PALETTE = {
+  emerald: { rgb: "16, 185, 129", text: "#6ee7b7" },
+  cyan: { rgb: "6, 182, 212", text: "#67e8f9" },
+  sky: { rgb: "14, 165, 233", text: "#7dd3fc" },
+  amber: { rgb: "245, 158, 11", text: "#fcd34d" },
+  rose: { rgb: "244, 63, 94", text: "#fda4af" },
+  fuchsia: { rgb: "217, 70, 239", text: "#f0abfc" },
+  blue: { rgb: "59, 130, 246", text: "#93c5fd" },
+  zinc: { rgb: "113, 113, 122", text: "#d4d4d8" },
+  orange: { rgb: "249, 115, 22", text: "#fdba74" },
+  violet: { rgb: "139, 92, 246", text: "#c4b5fd" },
+  teal: { rgb: "20, 184, 166", text: "#5eead4" },
+  slate: { rgb: "100, 116, 139", text: "#cbd5e1" },
+  stone: { rgb: "120, 113, 108", text: "#d6d3d1" },
+  yellow: { rgb: "234, 179, 8", text: "#fde047" },
+  pink: { rgb: "236, 72, 153", text: "#f9a8d4" },
+  green: { rgb: "34, 197, 94", text: "#86efac" },
+  red: { rgb: "239, 68, 68", text: "#fca5a5" },
+  gray: { rgb: "107, 114, 128", text: "#d1d5db" },
+  indigo: { rgb: "99, 102, 241", text: "#a5b4fc" },
+  lime: { rgb: "132, 204, 22", text: "#bef264" },
+} as const
+
+type ColorKey = keyof typeof PALETTE
+
+type Tone = ColorKey | { color: ColorKey; border: number }
+
+const DEFAULT_COLORS = {
+  bg: "rgba(255, 255, 255, 0.1)",
+  border: "rgba(255, 255, 255, 0.2)",
+  text: "#ffffff",
 }
 
-function getColorsForBadge(type: string, value: string | number) {
-  let colorKey = "default"
-
-  if (type === "rating") {
-    const r = Number(value)
-    if (r >= 9) colorKey = "emerald"
-    else if (r >= 7) colorKey = "cyan"
-    else if (r >= 5) colorKey = "yellow"
-    else if (r >= 3) colorKey = "orange"
-    else colorKey = "rose"
-  } else if (type === "quality") {
-    if (String(value).includes("Gem")) colorKey = "emerald"
-    else if (String(value).includes("Mid")) colorKey = "sky"
-    else colorKey = "rose"
-  } else if (type === "enjoyment") {
-    const map: Record<string, string> = {
-      "Loved it": "fuchsia",
-      "Liked it": "emerald",
-      Mixed: "blue",
-      Meh: "zinc",
-      "Didn't like it": "orange",
-      "Hated it": "rose",
-    }
-    colorKey = map[String(value)] || "default"
-  } else if (type === "impact") {
-    const map: Record<string, string> = {
-      Lingering: "violet",
-      Memorable: "teal",
-      Fleeting: "slate",
-      Forgettable: "stone",
-    }
-    colorKey = map[String(value)] || "default"
-  } else if (type === "status") {
-    const map: Record<string, string> = {
-      Finished: "green",
-      Watching: "yellow",
-      Dropped: "red",
-      Waiting: "blue",
-      Canceled: "gray",
-    }
-    colorKey = map[String(value)] || "default"
-  } else if (type === "medium") {
-    const map: Record<string, string> = {
-      Anime: "violet",
-      "Live Action": "amber",
-      Animation: "cyan",
-      Donghua: "fuchsia",
-    }
-    colorKey = map[String(value)] || "default"
-  } else if (type === "format") {
-    const map: Record<string, string> = { Series: "sky", Movie: "emerald" }
-    colorKey = map[String(value)] || "default"
-  } else if (type === "genre") {
-    const map: Record<string, string> = {
-      Action: "rose",
-      Comedy: "yellow",
-      Drama: "orange",
-      Romance: "fuchsia",
-      "Sci-Fi": "cyan",
-      Fantasy: "emerald",
-      Horror: "slate",
-      Mystery: "violet",
-      "Slice of Life": "pink",
-    }
-    colorKey = map[String(value)] || "default"
+function resolveTone(tone: Tone | undefined) {
+  if (!tone) return DEFAULT_COLORS
+  const color = typeof tone === "string" ? tone : tone.color
+  const borderAlpha = typeof tone === "string" ? 0.3 : tone.border
+  const { rgb, text } = PALETTE[color]
+  return {
+    bg: `rgba(${rgb}, 0.1)`,
+    border: `rgba(${rgb}, ${borderAlpha})`,
+    text,
   }
-
-  return COLORS[colorKey] || COLORS.default
 }
 
-// Badge Component inside Satori
+const QUALITY_TONES = {
+  "Gem-Gem": "emerald",
+  "Gem-Mid": "emerald",
+  "Gem-Slop": { color: "emerald", border: 0.2 },
+  "Mid-Gem": "cyan",
+  "Mid-Mid": "sky",
+  "Mid-Slop": { color: "sky", border: 0.2 },
+  "Slop-Gem": "amber",
+  "Slop-Mid": { color: "amber", border: 0.2 },
+  "Slop-Slop": "rose",
+} satisfies Record<ReviewQuality, Tone>
+
+const ENJOYMENT_TONES = {
+  "Loved it": "fuchsia",
+  "Liked it": "emerald",
+  Mixed: "blue",
+  Meh: "zinc",
+  "Didn't like it": "orange",
+  "Hated it": "rose",
+} satisfies Record<ReviewEnjoyment, Tone>
+
+const IMPACT_TONES = {
+  Lingering: "violet",
+  Memorable: "teal",
+  Fleeting: "slate",
+  Forgettable: "stone",
+} satisfies Record<ReviewImpact, Tone>
+
+const STATUS_TONES = {
+  Finished: "green",
+  Watching: "yellow",
+  Dropped: "red",
+  Waiting: "blue",
+  Canceled: "gray",
+} satisfies Record<ReviewStatus, Tone>
+
+const MEDIUM_TONES = {
+  "Live Action": "amber",
+  Anime: "violet",
+  Animation: "cyan",
+  Donghua: "fuchsia",
+  Book: "orange",
+  Manga: "rose",
+  "Light Novel": "indigo",
+} satisfies Record<ReviewMedium, Tone>
+
+const FORMAT_TONES = {
+  Series: "sky",
+  Movie: "emerald",
+  Novel: "orange",
+  "Light Novel": "indigo",
+  Comic: "rose",
+  Webtoon: "lime",
+  Anthology: "violet",
+  "Short Story": "teal",
+} satisfies Record<ReviewFormat, Tone>
+
+const GENRE_TONES = {
+  Action: "rose",
+  Comedy: "yellow",
+  Drama: "orange",
+  Romance: "fuchsia",
+  "Sci-Fi": "cyan",
+  Fantasy: "emerald",
+  Horror: "slate",
+  Mystery: "violet",
+  "Slice of Life": "pink",
+} satisfies Record<ReviewGenre, Tone>
+
+type BadgeType =
+  | "rating"
+  | "quality"
+  | "enjoyment"
+  | "impact"
+  | "medium"
+  | "format"
+  | "genre"
+  | "status"
+
+const TONE_MAPS: Record<Exclude<BadgeType, "rating">, Record<string, Tone>> = {
+  quality: QUALITY_TONES,
+  enjoyment: ENJOYMENT_TONES,
+  impact: IMPACT_TONES,
+  medium: MEDIUM_TONES,
+  format: FORMAT_TONES,
+  genre: GENRE_TONES,
+  status: STATUS_TONES,
+}
+
+function getRatingTone(rating: number): ColorKey {
+  if (rating >= 9) return "emerald"
+  if (rating >= 7) return "cyan"
+  if (rating >= 5) return "yellow"
+  if (rating >= 3) return "orange"
+  return "rose"
+}
+
+function getColorsForBadge(type: BadgeType, value: string | number) {
+  if (type === "rating") return resolveTone(getRatingTone(Number(value)))
+  return resolveTone(TONE_MAPS[type][String(value)])
+}
+
 function Badge({
   type,
   value,
   showStar = false,
 }: {
-  type: string
+  type: BadgeType
   value: string | number
   showStar?: boolean
 }) {
@@ -255,7 +252,12 @@ export async function GET(request: Request) {
     const medium = searchParams.get("medium")
     const format = searchParams.get("format")
     const genresRaw = searchParams.get("genres")
-    const genres = genresRaw ? genresRaw.split(",").map((g) => g.trim()) : []
+    const genres = genresRaw
+      ? genresRaw
+          .split(",")
+          .map((g) => g.trim())
+          .filter(Boolean)
+      : []
 
     // Parallelize font fetching for max speed
     const [interRegular, interSemiBold, interBold, merriweatherBold] =
