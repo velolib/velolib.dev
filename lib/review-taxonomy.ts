@@ -3,9 +3,21 @@ export const REVIEW_MEDIUMS = [
   "Anime",
   "Animation",
   "Donghua",
+  "Book",
+  "Manga",
+  "Light Novel",
 ] as const
 
-export const REVIEW_FORMATS = ["Series", "Movie"] as const
+export const REVIEW_FORMATS = [
+  "Series",
+  "Movie",
+  "Novel",
+  "Light Novel",
+  "Comic",
+  "Webtoon",
+  "Anthology",
+  "Short Story",
+] as const
 
 export const REVIEW_GENRES = [
   "Action",
