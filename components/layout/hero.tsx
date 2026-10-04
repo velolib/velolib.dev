@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from "motion/react"
 import {
   Award,
+  BadgeCheck,
   Code,
   GraduationCap,
   House,
@@ -69,12 +70,12 @@ const roles = [
   {
     label: "Shenzhen, China",
     icon: MapPin,
-    tone: "border-border/70 bg-muted/40 text-foreground",
+    tone: "border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-300",
   },
   {
     label: "From Jakarta, Indonesia",
     icon: House,
-    tone: "border-border/70 bg-muted/40 text-muted-foreground",
+    tone: "border-orange-500/30 bg-orange-500/10 text-orange-700 dark:text-orange-300",
   },
 ]
 
@@ -235,6 +236,7 @@ export function Hero({ counts }: HeroProps) {
                       variant="outline"
                       className="border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300"
                     >
+                      <BadgeCheck />
                       Awardee
                     </Badge>
                   </div>

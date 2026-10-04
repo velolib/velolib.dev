@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { House, MapPin } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { socialLinks } from "@/lib/social-links"
 import { buttonVariants } from "../ui/button"
@@ -51,15 +52,19 @@ export function SiteFooter() {
               Thanks for wandering <span className="text-brand">this far.</span>
             </p>
             <div className="flex flex-wrap gap-2">
-              <p className="inline-flex items-center gap-2 rounded-md border border-sky-500/30 bg-sky-500/10 px-2 py-1 font-mono text-xs text-sky-700 dark:text-sky-300">
+              <p className="inline-flex items-center gap-2 rounded-md border border-rose-500/30 bg-rose-500/10 px-2 py-1 font-mono text-xs text-rose-700 dark:text-rose-300">
+                <MapPin aria-hidden className="size-3.5" />
                 <FooterClock timeZone="Asia/Shanghai" />
                 <span className="text-muted-foreground">
                   in Shenzhen · UTC+8
                 </span>
               </p>
-              <p className="inline-flex items-center gap-2 rounded-md border bg-muted/40 px-2 py-1 font-mono text-xs text-muted-foreground">
+              <p className="inline-flex items-center gap-2 rounded-md border border-orange-500/30 bg-orange-500/10 px-2 py-1 font-mono text-xs text-orange-700 dark:text-orange-300">
+                <House aria-hidden className="size-3.5" />
                 <FooterClock timeZone="Asia/Jakarta" />
-                <span>from Jakarta · UTC+7</span>
+                <span className="text-muted-foreground">
+                  from Jakarta · UTC+7
+                </span>
               </p>
             </div>
           </div>

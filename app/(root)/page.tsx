@@ -10,7 +10,7 @@ import { ReviewCard } from "@/components/reviews/review-card"
 import { ProjectCard } from "@/components/projects/project-card"
 import { PROJECTS } from "@/lib/projects"
 import { curatedSort } from "@/lib/curated-sort"
-import { buildOgImageUrl, buildPageMetadata, toAbsoluteUrl } from "@/lib/seo"
+import { buildPageMetadata, toAbsoluteUrl } from "@/lib/seo"
 import GradientBackground from "@/components/layout/gradient-background"
 import { PageScroller } from "@/components/layout/page-scroller"
 
@@ -22,11 +22,8 @@ export const metadata: Metadata = buildPageMetadata({
   title: "Home",
   description: "velolib.dev is the personal site of Malik (velolib).",
   pathname: "/",
-  image: buildOgImageUrl({
-    title: "velolib.dev",
-    description: "velolib.dev is the personal site of Malik (velolib).",
-    eyebrow: "Home",
-  }),
+  image: "/api/og/home",
+  imageAlt: "velolib.dev, the personal site of Malik (velo)",
 })
 
 export default function Page() {

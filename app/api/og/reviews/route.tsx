@@ -1,14 +1,5 @@
 import { ImageResponse } from "takumi-js/response"
 import {
-  REVIEW_ENJOYMENTS,
-  REVIEW_FORMATS,
-  REVIEW_GENRES,
-  REVIEW_IMPACTS,
-  REVIEW_MEDIUMS,
-  REVIEW_QUALITIES,
-  REVIEW_STATUSES,
-} from "@/lib/review-taxonomy"
-import {
   BRAND_GRADIENT,
   OgHeading,
   OgFrame,
@@ -22,131 +13,41 @@ import {
   toSiteImageUrl,
 } from "@/lib/og"
 import { getReviewIcon } from "@/lib/review-icons"
+import { type ToneColor, getReviewTone } from "@/lib/review-tones"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
 
-type ReviewMedium = (typeof REVIEW_MEDIUMS)[number]
-type ReviewFormat = (typeof REVIEW_FORMATS)[number]
-type ReviewGenre = (typeof REVIEW_GENRES)[number]
-type ReviewStatus = (typeof REVIEW_STATUSES)[number]
-type ReviewQuality = (typeof REVIEW_QUALITIES)[number]
-type ReviewEnjoyment = (typeof REVIEW_ENJOYMENTS)[number]
-type ReviewImpact = (typeof REVIEW_IMPACTS)[number]
-
 const PALETTE = {
+  red: { rgb: "239, 68, 68", text: "#fca5a5" },
+  orange: { rgb: "249, 115, 22", text: "#fdba74" },
+  amber: { rgb: "245, 158, 11", text: "#fcd34d" },
+  yellow: { rgb: "234, 179, 8", text: "#fde047" },
+  lime: { rgb: "132, 204, 22", text: "#bef264" },
+  green: { rgb: "34, 197, 94", text: "#86efac" },
   emerald: { rgb: "16, 185, 129", text: "#6ee7b7" },
+  teal: { rgb: "20, 184, 166", text: "#5eead4" },
   cyan: { rgb: "6, 182, 212", text: "#67e8f9" },
   sky: { rgb: "14, 165, 233", text: "#7dd3fc" },
-  amber: { rgb: "245, 158, 11", text: "#fcd34d" },
-  rose: { rgb: "244, 63, 94", text: "#fda4af" },
-  fuchsia: { rgb: "217, 70, 239", text: "#f0abfc" },
   blue: { rgb: "59, 130, 246", text: "#93c5fd" },
-  zinc: { rgb: "113, 113, 122", text: "#d4d4d8" },
-  orange: { rgb: "249, 115, 22", text: "#fdba74" },
-  violet: { rgb: "139, 92, 246", text: "#c4b5fd" },
-  teal: { rgb: "20, 184, 166", text: "#5eead4" },
-  slate: { rgb: "100, 116, 139", text: "#cbd5e1" },
-  stone: { rgb: "120, 113, 108", text: "#d6d3d1" },
-  yellow: { rgb: "234, 179, 8", text: "#fde047" },
-  pink: { rgb: "236, 72, 153", text: "#f9a8d4" },
-  green: { rgb: "34, 197, 94", text: "#86efac" },
-  red: { rgb: "239, 68, 68", text: "#fca5a5" },
-  gray: { rgb: "107, 114, 128", text: "#d1d5db" },
   indigo: { rgb: "99, 102, 241", text: "#a5b4fc" },
-  lime: { rgb: "132, 204, 22", text: "#bef264" },
-} as const
-
-type ColorKey = keyof typeof PALETTE
-
-type Tone = ColorKey | { color: ColorKey; border: number }
+  violet: { rgb: "139, 92, 246", text: "#c4b5fd" },
+  purple: { rgb: "168, 85, 247", text: "#d8b4fe" },
+  fuchsia: { rgb: "217, 70, 239", text: "#f0abfc" },
+  pink: { rgb: "236, 72, 153", text: "#f9a8d4" },
+  rose: { rgb: "244, 63, 94", text: "#fda4af" },
+  slate: { rgb: "100, 116, 139", text: "#cbd5e1" },
+  gray: { rgb: "107, 114, 128", text: "#d1d5db" },
+  zinc: { rgb: "113, 113, 122", text: "#d4d4d8" },
+  neutral: { rgb: "115, 115, 115", text: "#d4d4d4" },
+  stone: { rgb: "120, 113, 108", text: "#d6d3d1" },
+} satisfies Record<ToneColor, { rgb: string; text: string }>
 
 const DEFAULT_COLORS = {
   bg: "rgba(255, 255, 255, 0.1)",
   border: "rgba(255, 255, 255, 0.2)",
   text: "#ffffff",
 }
-
-function resolveTone(tone: Tone | undefined) {
-  if (!tone) return DEFAULT_COLORS
-  const color = typeof tone === "string" ? tone : tone.color
-  const borderAlpha = typeof tone === "string" ? 0.3 : tone.border
-  const { rgb, text } = PALETTE[color]
-  return {
-    bg: `rgba(${rgb}, 0.1)`,
-    border: `rgba(${rgb}, ${borderAlpha})`,
-    text,
-  }
-}
-
-const QUALITY_TONES = {
-  "Gem-Gem": "emerald",
-  "Gem-Mid": "emerald",
-  "Gem-Slop": { color: "emerald", border: 0.2 },
-  "Mid-Gem": "cyan",
-  "Mid-Mid": "sky",
-  "Mid-Slop": { color: "sky", border: 0.2 },
-  "Slop-Gem": "amber",
-  "Slop-Mid": { color: "amber", border: 0.2 },
-  "Slop-Slop": "rose",
-} satisfies Record<ReviewQuality, Tone>
-
-const ENJOYMENT_TONES = {
-  "Loved it": "fuchsia",
-  "Liked it": "emerald",
-  Mixed: "blue",
-  Meh: "zinc",
-  "Didn't like it": "orange",
-  "Hated it": "rose",
-} satisfies Record<ReviewEnjoyment, Tone>
-
-const IMPACT_TONES = {
-  Lingering: "violet",
-  Memorable: "teal",
-  Fleeting: "slate",
-  Forgettable: "stone",
-} satisfies Record<ReviewImpact, Tone>
-
-const STATUS_TONES = {
-  Finished: "green",
-  Watching: "yellow",
-  Dropped: "red",
-  Waiting: "blue",
-  Canceled: "gray",
-} satisfies Record<ReviewStatus, Tone>
-
-const MEDIUM_TONES = {
-  "Live Action": "amber",
-  Anime: "violet",
-  Animation: "cyan",
-  Donghua: "fuchsia",
-  Book: "orange",
-  Manga: "rose",
-  "Light Novel": "indigo",
-} satisfies Record<ReviewMedium, Tone>
-
-const FORMAT_TONES = {
-  Series: "sky",
-  Movie: "emerald",
-  Novel: "orange",
-  "Light Novel": "indigo",
-  Comic: "rose",
-  Webtoon: "lime",
-  Anthology: "violet",
-  "Short Story": "teal",
-} satisfies Record<ReviewFormat, Tone>
-
-const GENRE_TONES = {
-  Action: "rose",
-  Comedy: "yellow",
-  Drama: "orange",
-  Romance: "fuchsia",
-  "Sci-Fi": "cyan",
-  Fantasy: "emerald",
-  Horror: "slate",
-  Mystery: "violet",
-  "Slice of Life": "pink",
-} satisfies Record<ReviewGenre, Tone>
 
 type BadgeType =
   | "rating"
@@ -158,27 +59,15 @@ type BadgeType =
   | "genre"
   | "status"
 
-const TONE_MAPS: Record<Exclude<BadgeType, "rating">, Record<string, Tone>> = {
-  quality: QUALITY_TONES,
-  enjoyment: ENJOYMENT_TONES,
-  impact: IMPACT_TONES,
-  medium: MEDIUM_TONES,
-  format: FORMAT_TONES,
-  genre: GENRE_TONES,
-  status: STATUS_TONES,
-}
-
-function getRatingTone(rating: number): ColorKey {
-  if (rating >= 9) return "emerald"
-  if (rating >= 7) return "cyan"
-  if (rating >= 5) return "yellow"
-  if (rating >= 3) return "orange"
-  return "rose"
-}
-
 function getColorsForBadge(type: BadgeType, value: string | number) {
-  if (type === "rating") return resolveTone(getRatingTone(Number(value)))
-  return resolveTone(TONE_MAPS[type][String(value)])
+  const tone = getReviewTone(type, value)
+  if (!tone) return DEFAULT_COLORS
+  const { rgb, text } = PALETTE[tone]
+  return {
+    bg: `rgba(${rgb}, 0.1)`,
+    border: `rgba(${rgb}, 0.3)`,
+    text,
+  }
 }
 
 function StarIcon({ size, color }: { size: number; color: string }) {
