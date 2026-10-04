@@ -10,7 +10,6 @@ export async function GET(request: NextRequest) {
     const query = searchParams.get("q")
     const type = searchParams.get("type")
 
-    // Validate query
     if (!query || query.length < 2) {
       return NextResponse.json(
         { error: "Query must be at least 2 characters" },
@@ -18,7 +17,6 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Validate media type
     if (type !== "tv" && type !== "movie") {
       return NextResponse.json(
         { error: 'Type must be either "tv" or "movie"' },
@@ -26,7 +24,6 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Ensure API key is configured
     if (!TMDB_TOKEN) {
       return NextResponse.json(
         { error: "TMDB_TOKEN not configured" },
@@ -34,7 +31,6 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Search TMDB
     const response = await axios.get(`${TMDB_BASE_URL}/search/${type}`, {
       params: {
         query,

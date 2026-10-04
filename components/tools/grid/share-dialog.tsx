@@ -1,6 +1,6 @@
 "use client"
 
-import { Code, Download, Share2 } from "lucide-react"
+import { Code, Link2, Share2 } from "lucide-react"
 import Image from "next/image"
 import axios from "axios"
 
@@ -43,7 +43,6 @@ export function ShareDialog({ id, gridData }: ShareDialogProps) {
         return
       }
 
-      // Fallback to download
       const objectUrl = URL.createObjectURL(blob)
 
       const link = document.createElement("a")
@@ -78,8 +77,12 @@ export function ShareDialog({ id, gridData }: ShareDialogProps) {
     <Dialog>
       <DialogTrigger
         render={
-          <Button>
-            <Share2 /> Share{" "}
+          <Button
+            variant="outline"
+            className="btn-brand group relative border-transparent hover:bg-sky-300/10"
+          >
+            <Share2 className="text-sky-600 dark:text-sky-300" />
+            Share
           </Button>
         }
       />
@@ -88,12 +91,17 @@ export function ShareDialog({ id, gridData }: ShareDialogProps) {
         <SectionShell
           title="Share grid"
           description="Download the image, share a link, or copy the underlying grid data."
-          eyebrow={id}
+          eyebrow="Share"
           id="share-dialog"
           className="flex min-h-0 flex-1 flex-col"
           compact
         >
-          <div className="overflow-hidden rounded-xl border bg-muted">
+          <div
+            className={cn(
+              "image-ring relative mx-auto w-full overflow-hidden rounded-2xl bg-muted shadow-[0_30px_80px_rgb(56_189_248/0.18)]",
+              gridData.isSquare ? "max-w-md" : "max-w-xs"
+            )}
+          >
             <Image
               unoptimized
               src={imageUrl}
@@ -101,24 +109,29 @@ export function ShareDialog({ id, gridData }: ShareDialogProps) {
               width={1080}
               height={gridData.isSquare ? 1080 : 1620}
               className={cn(
-                "aspect-square w-full object-cover",
+                "block w-full object-cover",
                 gridData.isSquare ? "aspect-square" : "aspect-2/3"
               )}
               priority
             />
           </div>
           <div className="flex flex-col gap-4">
-            <Button onClick={handleShareImage} size="lg" className="w-full">
-              <Share2 className="size-4.5" />
+            <Button
+              onClick={handleShareImage}
+              size="lg"
+              variant="outline"
+              className="btn-brand group relative w-full border-transparent hover:bg-sky-300/10"
+            >
+              <Share2 className="text-sky-600 dark:text-sky-300" />
               Share image
             </Button>
             <div className="grid grid-cols-2 gap-4">
               <Button variant="outline" onClick={copyLink}>
-                <Share2 className="size-4.5" />
+                <Link2 />
                 Copy link
               </Button>
               <Button variant="outline" onClick={copyGridData}>
-                <Code className="size-4.5" />
+                <Code />
                 Copy grid data
               </Button>
             </div>

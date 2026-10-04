@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react"
 import type { SlimReview } from "../../lib/content"
 import { ReviewCard } from "./review-card"
 import { Button } from "@/components/ui/button"
+import { LoadMoreButton } from "@/components/shared/load-more-button"
 import { ButtonGroup } from "@/components/ui/button-group"
 import {
   Combobox,
@@ -934,11 +935,13 @@ export function ReviewLoadMore({
       )}
 
       {hasMore && (
-        <div className="flex justify-center pt-2">
-          <Button type="button" variant="outline" onClick={handleLoadMore}>
-            Load more reviews
-          </Button>
-        </div>
+        <LoadMoreButton
+          onClick={handleLoadMore}
+          shown={visibleReviews.length}
+          total={filteredSortedReviews.length}
+        >
+          Load more reviews
+        </LoadMoreButton>
       )}
     </div>
   )

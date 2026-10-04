@@ -1,4 +1,4 @@
-import type { HTMLAttributes } from "react"
+import { createElement, type HTMLAttributes } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Star } from "lucide-react"
 import { cva } from "class-variance-authority"
@@ -11,6 +11,7 @@ import {
   REVIEW_QUALITIES,
   REVIEW_STATUSES,
 } from "@/lib/review-taxonomy"
+import { getReviewIcon } from "@/lib/review-icons"
 
 type ReviewMedium = (typeof REVIEW_MEDIUMS)[number]
 type ReviewFormat = (typeof REVIEW_FORMATS)[number]
@@ -31,10 +32,8 @@ const qualityTones = {
     "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
   "Mid-Gem":
     "border-cyan-500/30 bg-cyan-500/10 text-cyan-700 dark:text-cyan-300",
-  "Mid-Mid":
-    "border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300",
-  "Mid-Slop":
-    "border-sky-500/20 bg-sky-500/10 text-sky-700 dark:text-sky-300",
+  "Mid-Mid": "border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300",
+  "Mid-Slop": "border-sky-500/20 bg-sky-500/10 text-sky-700 dark:text-sky-300",
   "Slop-Gem":
     "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300",
   "Slop-Mid":
@@ -91,8 +90,7 @@ const formatTones = {
   "Light Novel":
     "border-indigo-500/30 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300",
   Comic: "border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-300",
-  Webtoon:
-    "border-lime-500/30 bg-lime-500/10 text-lime-700 dark:text-lime-300",
+  Webtoon: "border-lime-500/30 bg-lime-500/10 text-lime-700 dark:text-lime-300",
   Anthology:
     "border-violet-500/30 bg-violet-500/10 text-violet-700 dark:text-violet-300",
   "Short Story":
@@ -130,7 +128,9 @@ const statusTones = {
     "border-gray-500/30 bg-gray-500/10 text-gray-700 dark:text-gray-300",
 } satisfies Record<ReviewStatus, string>
 
-const qualityBadgeClasses = cva(BADGE_BASE, { variants: { tone: qualityTones } })
+const qualityBadgeClasses = cva(BADGE_BASE, {
+  variants: { tone: qualityTones },
+})
 const enjoymentBadgeClasses = cva(BADGE_BASE, {
   variants: { tone: enjoymentTones },
 })
@@ -213,12 +213,15 @@ export default function ReviewBadge({
       classes = ""
   }
 
+  const icon = getReviewIcon(type, value)
+
   return (
     <Badge
       variant="outline"
       className={[classes, className].filter(Boolean).join(" ")}
       {...rest}
     >
+      {icon && createElement(icon, { "aria-hidden": true })}
       {value}
       {type === "rating" && <Star className="h-3 w-3" fill="currentColor" />}
     </Badge>

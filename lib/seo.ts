@@ -58,12 +58,43 @@ export function buildOgImageUrl({
   return imageUrl.toString()
 }
 
+export type BuildBlogOgImageUrlInput = {
+  title: string
+  description: string
+  cover: string
+  date: string
+  readingTime: number
+  sections?: number
+}
+
+export function buildBlogOgImageUrl({
+  title,
+  description,
+  cover,
+  date,
+  readingTime,
+  sections = 0,
+}: BuildBlogOgImageUrlInput): string {
+  const imageUrl = new URL("/api/og/blog", SITE_URL)
+
+  imageUrl.searchParams.set("title", title)
+  imageUrl.searchParams.set("description", description)
+  imageUrl.searchParams.set("date", date)
+  imageUrl.searchParams.set("readingTime", String(readingTime))
+  if (sections > 0) imageUrl.searchParams.set("sections", String(sections))
+  imageUrl.searchParams.set("cover", cover)
+
+  return imageUrl.toString()
+}
+
 export type BuildReviewOgImageUrlInput = {
   title: string
   description: string
   rating: number
   slug?: string
+  poster?: string
   eyebrow?: string
+  date?: string
   quality?: string
   enjoyment?: string
   impact?: string
@@ -78,6 +109,7 @@ export function buildReviewOgImageUrl({
   description,
   rating,
   slug,
+  poster,
   quality,
   enjoyment,
   impact,
@@ -86,6 +118,7 @@ export function buildReviewOgImageUrl({
   format,
   genres = [],
   eyebrow,
+  date,
 }: BuildReviewOgImageUrlInput): string {
   const imageUrl = new URL("/api/og/reviews", SITE_URL)
 
@@ -101,10 +134,10 @@ export function buildReviewOgImageUrl({
   if (genres.length > 0) imageUrl.searchParams.set("genres", genres.join(","))
 
   if (eyebrow) imageUrl.searchParams.set("eyebrow", eyebrow)
+  if (date) imageUrl.searchParams.set("date", date)
 
-  // Optional slug used by the OG route to infer backdrop image paths
-  // e.g. /images/reviews/{slug}/backdrop.jpg
   if (slug) imageUrl.searchParams.set("slug", slug)
+  if (poster) imageUrl.searchParams.set("poster", poster)
 
   return imageUrl.toString()
 }

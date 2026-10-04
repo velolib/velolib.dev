@@ -7,6 +7,7 @@ import type { SlimPost } from "@/lib/content"
 import { slimPost } from "@/lib/content"
 import GradientBackground from "@/components/layout/gradient-background"
 import { buildOgImageUrl, buildPageMetadata } from "@/lib/seo"
+import { PageScroller } from "@/components/layout/page-scroller"
 
 const INITIAL_POST_COUNT = 8
 
@@ -33,19 +34,19 @@ export default async function BlogPage() {
     .map(slimPost) satisfies SlimPost[]
 
   return (
-    <main className="relative h-[calc(100dvh-var(--nav-height))] snap-y snap-proximity overflow-x-hidden overflow-y-auto scroll-smooth">
+    <PageScroller>
       <SectionShell
         id="blog"
         title={SECTIONS.blog.title}
         eyebrow={SECTIONS.blog.eyebrow}
         description={SECTIONS.blog.description}
       >
-        <GradientBackground />
+        <GradientBackground inverted />
         <BlogLoadMore
           initialPosts={slimPosts}
           totalPosts={sortedPosts.length}
         />
       </SectionShell>
-    </main>
+    </PageScroller>
   )
 }

@@ -1,18 +1,27 @@
-import { buttonVariants } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { ScrollToHeader } from "@/components/shared/scroll-to-header"
 import type { Metadata } from "next"
-import { formatDate } from "@/lib/utils"
-import { allPosts } from "content-collections"
 import Image from "next/image"
-import Link from "next/link"
 import { notFound } from "next/navigation"
-import { ArrowLeft } from "lucide-react"
+import { allPosts } from "content-collections"
+import { CalendarDays, Clock, ListTree } from "lucide-react"
+
+import { formatDate } from "@/lib/utils"
+import { slimPost } from "@/lib/content"
 import ReturnToTop from "@/components/shared/return-to-top"
-import Toc from "@/components/shared/toc"
+import { BackLink } from "@/components/shared/back-link"
+import { SectionHeading } from "@/components/shared/section-heading"
+import { SectionShell } from "@/components/shared/section-shell"
+import { ArticleBody } from "@/components/shared/article-body"
+import { BlogCard } from "@/components/blog/blog-card"
 import { createMdxComponents } from "@/components/mdx/mdx-components"
 import GradientBackground from "@/components/layout/gradient-background"
-import { buildOgImageUrl, buildPageMetadata, toAbsoluteUrl } from "@/lib/seo"
+import {
+  buildBlogOgImageUrl,
+  buildPageMetadata,
+  toAbsoluteUrl,
+} from "@/lib/seo"
+import { PageScroller } from "@/components/layout/page-scroller"
+
+const RELATED_POST_COUNT = 3
 
 export async function generateStaticParams() {
   return allPosts.map((post) => ({
@@ -48,10 +57,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     publishedTime: post.pubDate.toISOString(),
     modifiedTime: post.pubDate.toISOString(),
     keywords: ["blog", "post", post.slug, "velolib"],
-    image: buildOgImageUrl({
+    image: buildBlogOgImageUrl({
       title: post.title,
       description: post.description,
-      eyebrow: `Blog | ${formatDate(post.pubDate)}`,
+      cover: post.coverImage,
+      date: formatDate(post.pubDate),
+      readingTime: post.readingTime,
+      sections: post.toc.length,
     }),
   })
 }
@@ -65,6 +77,31 @@ export default async function BlogPostPage({ params }: Props) {
 
   const MdxContent = post.mdxContent
   const mdxComponents = createMdxComponents()
+
+  const relatedPosts = allPosts
+    .filter((entry) => entry.slug !== post.slug)
+    .sort(
+      (a, b) =>
+        Math.abs(a.pubDate.getTime() - post.pubDate.getTime()) -
+        Math.abs(b.pubDate.getTime() - post.pubDate.getTime())
+    )
+    .slice(0, RELATED_POST_COUNT)
+    .sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime())
+    .map(slimPost)
+
+  const meta = [
+    { icon: CalendarDays, label: formatDate(post.pubDate) },
+    { icon: Clock, label: `${post.readingTime} min read` },
+    ...(post.toc.length > 0
+      ? [
+          {
+            icon: ListTree,
+            label: `${post.toc.length} ${post.toc.length === 1 ? "section" : "sections"}`,
+          },
+        ]
+      : []),
+  ]
+
   const blogPostingJsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -86,54 +123,72 @@ export default async function BlogPostPage({ params }: Props) {
   }
 
   return (
-    <main
-      className="relative h-[calc(100dvh-var(--nav-height))] snap-y snap-proximity overflow-x-hidden overflow-y-auto scroll-smooth"
-      id="scroll-root"
-    >
+    <PageScroller id="scroll-root">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(blogPostingJsonLd) }}
       />
-      <div className="relative flex flex-col">
+
+      <header className="relative flex min-h-[calc(100dvh-var(--nav-height))] snap-start snap-always items-center overflow-x-hidden py-10">
         <GradientBackground />
-        <article className="container mx-auto flex flex-col gap-10 p-4 pb-10 sm:p-6 md:pb-14 lg:p-8">
-          <Image
-            src={post.coverImage}
-            alt={post.coverImageAlt}
-            width="1200"
-            height="630"
-            className="aspect-video w-full rounded-3xl border object-cover"
-          />
-          <ScrollToHeader>
-            <div className="space-y-5">
-              <Link
-                href="/blog"
-                className={buttonVariants({ variant: "outline" })}
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back to blog
-              </Link>
-              <div className="space-y-4">
-                <p className="text-sm font-medium tracking-[0.32em] text-muted-foreground uppercase">
-                  Blog | {formatDate(post.pubDate)}
-                </p>
-                <h1 className="text-brand pb-2 font-serif text-5xl font-bold tracking-tight md:text-6xl">
-                  {post.title}
-                </h1>
-                <p className="max-w-2xl text-sm leading-6 text-muted-foreground md:text-base">
-                  {post.description}
-                </p>
-              </div>
-            </div>
-          </ScrollToHeader>
-          <Separator />
-          {post.toc && post.toc.length > 0 && <Toc toc={post.toc} />}
-          <article className="prose max-w-none pt-2 text-pretty prose-neutral dark:prose-invert prose-headings:scroll-m-20 prose-headings:tracking-tight prose-a:text-sky-300">
-            <MdxContent components={mdxComponents} />
-          </article>
-        </article>
-      </div>
+        <div className="container mx-auto grid items-center gap-10 px-4 sm:px-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-14 lg:px-8">
+          <div className="flex flex-col gap-6">
+            <BackLink href="/blog">Back to blog</BackLink>
+            <SectionHeading
+              eyebrow="Blog"
+              title={post.title}
+              description={post.description}
+            />
+            <ul className="flex flex-wrap gap-x-5 gap-y-2 text-xs font-medium tracking-[0.2em] text-muted-foreground uppercase">
+              {meta.map(({ icon: Icon, label }) => (
+                <li key={label} className="flex items-center gap-2">
+                  <Icon className="size-3.5 text-sky-600 dark:text-sky-300" />
+                  {label}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <figure className="group image-ring relative overflow-hidden rounded-3xl bg-muted shadow-[0_30px_80px_rgb(56_189_248/0.18)]">
+            <Image
+              src={post.coverImage}
+              alt={post.coverImageAlt}
+              width={1200}
+              height={675}
+              preload
+              sizes="(max-width: 1024px) 100vw, 60vw"
+              className="block aspect-video w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+            />
+          </figure>
+        </div>
+      </header>
+
+      <ArticleBody toc={post.toc}>
+        <MdxContent components={mdxComponents} />
+      </ArticleBody>
+
+      {relatedPosts.length > 0 && (
+        <SectionShell
+          id="keep-reading"
+          eyebrow="Blog"
+          title="Keep reading"
+          description="More posts written around the same time."
+          buttonHref="/blog"
+          buttonText="View all posts"
+          className="min-h-0"
+          compact
+          divider
+        >
+          <GradientBackground />
+          <div className="grid items-stretch gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+            {relatedPosts.map((entry) => (
+              <BlogCard key={entry.slug} {...entry} />
+            ))}
+          </div>
+        </SectionShell>
+      )}
+
       <ReturnToTop />
-    </main>
+    </PageScroller>
   )
 }

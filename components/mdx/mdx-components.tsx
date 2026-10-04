@@ -7,6 +7,9 @@ import { SpotifyEmbed } from "./review-spotify-embed"
 import GithubSlugger from "github-slugger"
 import React from "react"
 import Link from "next/link"
+import { Link as LinkIcon } from "lucide-react"
+
+import { cn } from "@/lib/utils"
 
 function getTextFromChildren(children: React.ReactNode): string {
   let text = ""
@@ -27,23 +30,65 @@ function getTextFromChildren(children: React.ReactNode): string {
 export function createMdxComponents(): MDXComponents {
   const slugger = new GithubSlugger()
 
-  const heading = (Tag: "h1" | "h2" | "h3" | "h4" | "h5" | "h6") => {
+  const heading = (Tag: "h2" | "h3" | "h4" | "h5" | "h6") => {
     const Comp: React.FC<
       React.HTMLAttributes<HTMLElement> & { children?: React.ReactNode }
-    > = ({ children, ...rest }) => {
+    > = ({ children, className, ...rest }) => {
       const text = getTextFromChildren(children).trim()
       const id = text ? slugger.slug(text) : undefined
-      const level = parseInt(Tag.slice(1), 10) || 1
-      const hashes = "#".repeat(level)
+
+      const title = (
+        <span className="min-w-0">
+          {children}
+          {id && (
+            <span className="not-prose">
+              <a
+                href={`#${id}`}
+                aria-label={`Link to section: ${text}`}
+                className="ml-2 inline-flex align-middle text-sky-600 no-underline opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 dark:text-sky-300"
+              >
+                <LinkIcon aria-hidden className="size-[0.6em]" />
+              </a>
+            </span>
+          )}
+        </span>
+      )
+
+      if (Tag === "h2") {
+        return (
+          <h2
+            id={id}
+            className={cn("group flex flex-col gap-3", className)}
+            {...rest}
+          >
+            {title}
+            <span
+              aria-hidden
+              className="h-0.5 rounded-full bg-linear-to-r from-sky-300 via-sea-300/60 to-transparent"
+            />
+          </h2>
+        )
+      }
+
+      if (Tag === "h3") {
+        return (
+          <h3
+            id={id}
+            className={cn("group flex items-start gap-3", className)}
+            {...rest}
+          >
+            <span aria-hidden className="flex h-lh shrink-0 items-center">
+              <span className="size-2 rotate-45 rounded-xs bg-linear-to-br from-sky-300 to-sea-300" />
+            </span>
+            {title}
+          </h3>
+        )
+      }
 
       return React.createElement(
         Tag,
-        { id, className: "", ...rest },
-        <>
-          <span className="text-brand font-extrabold">{hashes}</span>
-          &nbsp;
-          {children}
-        </>
+        { id, className: cn("group", className), ...rest },
+        title
       )
     }
 
@@ -52,7 +97,6 @@ export function createMdxComponents(): MDXComponents {
   }
 
   return {
-    h1: heading("h1"),
     h2: heading("h2"),
     h3: heading("h3"),
     h4: heading("h4"),

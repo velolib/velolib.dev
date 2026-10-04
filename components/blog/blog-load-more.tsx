@@ -5,7 +5,7 @@ import { useState, useTransition } from "react"
 import { loadMorePosts } from "@/app/actions"
 import type { SlimPost } from "../../lib/content"
 import { BlogCard } from "./blog-card"
-import { Button } from "@/components/ui/button"
+import { LoadMoreButton } from "@/components/shared/load-more-button"
 
 const LOAD_MORE_COUNT = 4
 
@@ -37,16 +37,14 @@ export function BlogLoadMore({ initialPosts, totalPosts }: BlogLoadMoreProps) {
       </div>
 
       {hasMore && (
-        <div className="flex justify-center pt-2">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleLoadMore}
-            disabled={isPending}
-          >
-            {isPending ? "Loading more posts..." : "Load more posts"}
-          </Button>
-        </div>
+        <LoadMoreButton
+          onClick={handleLoadMore}
+          pending={isPending}
+          shown={posts.length}
+          total={totalPosts}
+        >
+          {isPending ? "Loading more posts" : "Load more posts"}
+        </LoadMoreButton>
       )}
     </div>
   )

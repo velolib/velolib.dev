@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000 // +7 days in milliseconds
+    const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000
 
     const response = await client.d1.database.query(databaseId, {
       account_id: accountId,

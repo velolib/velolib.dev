@@ -10,8 +10,9 @@ import { ReviewCard } from "@/components/reviews/review-card"
 import { ProjectCard } from "@/components/projects/project-card"
 import { PROJECTS } from "@/lib/projects"
 import { curatedSort } from "@/lib/curated-sort"
-import GradientBackground from "@/components/layout/gradient-background"
 import { buildOgImageUrl, buildPageMetadata, toAbsoluteUrl } from "@/lib/seo"
+import GradientBackground from "@/components/layout/gradient-background"
+import { PageScroller } from "@/components/layout/page-scroller"
 
 const INITIAL_POST_COUNT = 4
 const INITIAL_REVIEW_COUNT = 12
@@ -51,14 +52,21 @@ export default function Page() {
   }
 
   return (
-    <main className="relative h-[calc(100dvh-var(--nav-height))] snap-y snap-proximity overflow-x-hidden overflow-y-auto scroll-smooth">
+    <PageScroller>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
-      <Hero />
+      <Hero
+        counts={{
+          blog: allPosts.length,
+          reviews: allReviews.length,
+          projects: PROJECTS.length,
+        }}
+      />
       <SectionShell
         id="blog"
+        divider
         eyebrow={SECTIONS.blog.eyebrow}
         title={SECTIONS.blog.title}
         description={SECTIONS.blog.description}
@@ -76,6 +84,7 @@ export default function Page() {
       </SectionShell>
       <SectionShell
         id="reviews"
+        divider
         eyebrow={SECTIONS.reviews.eyebrow}
         title={SECTIONS.reviews.title}
         description={SECTIONS.reviews.description}
@@ -108,6 +117,7 @@ export default function Page() {
       </SectionShell>
       <SectionShell
         id="projects"
+        divider
         eyebrow={SECTIONS.projects.eyebrow}
         title={SECTIONS.projects.title}
         description={SECTIONS.projects.description}
@@ -121,6 +131,7 @@ export default function Page() {
                 key={project.slug}
                 slug={project.slug}
                 title={project.title}
+                kind={project.kind}
                 description={project.description}
                 image={project.image}
                 imageAlt={project.imageAlt}
@@ -131,6 +142,6 @@ export default function Page() {
         </div>
         <GradientBackground inverted />
       </SectionShell>
-    </main>
+    </PageScroller>
   )
 }

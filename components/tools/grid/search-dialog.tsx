@@ -10,20 +10,10 @@ import { useDebounce } from "@uidotdev/usehooks"
 import { Spinner } from "@/components/ui/spinner"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import Image from "next/image"
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from "@/components/ui/combobox"
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemTitle,
-} from "@/components/ui/item"
+import { Button } from "@/components/ui/button"
+import { ButtonGroup } from "@/components/ui/button-group"
+import { Film, Search, Tv } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface SearchDialogProps {
   isOpen: boolean
@@ -33,17 +23,9 @@ interface SearchDialogProps {
 }
 
 const typeOptions = [
-  {
-    value: "movie",
-    label: "Movie",
-    description: "Search movies from TMDB",
-  },
-  {
-    value: "tv",
-    label: "TV Show",
-    description: "Search TV shows from TMDB",
-  },
-]
+  { value: "tv", label: "TV shows", icon: Tv },
+  { value: "movie", label: "Movies", icon: Film },
+] as const
 
 export function SearchDialog({
   isOpen,
@@ -67,6 +49,7 @@ export function SearchDialog({
         return
       }
       setLoading(true)
+      setError("")
       try {
         const response = await axios.get("/api/tools/grid/search", {
           params: { q: debouncedQuery, type: selectedType },
@@ -101,102 +84,110 @@ export function SearchDialog({
       <DialogContent className="flex h-[90svh] max-h-[90svh] w-full max-w-3xl flex-col overflow-hidden p-0">
         <SectionShell
           id={`search-dialog-${slotIndex}`}
-          eyebrow="Search"
+          eyebrow={`Slot ${String(slotIndex + 1).padStart(2, "0")}`}
           title="Search media"
-          description="Search for your media and add them to your grid."
+          description="Find a show or film on TMDB and drop it into your grid."
           className="flex min-h-0 flex-1 flex-col"
           compact
         >
           <div className="flex min-h-0 flex-1 flex-col gap-6">
-            <Combobox
-              items={typeOptions}
-              value={typeOptions.find((item) => item.value === selectedType)}
-              onValueChange={(item) => {
-                if (item) {
-                  setSelectedType(item.value)
-                }
-              }}
-              itemToStringValue={(item) => item.label}
-            >
-              <ComboboxInput placeholder="Select media type..." />
-
-              <ComboboxContent>
-                <ComboboxEmpty>No media types found.</ComboboxEmpty>
-
-                <ComboboxList>
-                  {(item) => (
-                    <ComboboxItem key={item.value} value={item}>
-                      <Item size="xs" className="p-0">
-                        <ItemContent>
-                          <ItemTitle>{item.label}</ItemTitle>
-                          <ItemDescription>{item.description}</ItemDescription>
-                        </ItemContent>
-                      </Item>
-                    </ComboboxItem>
-                  )}
-                </ComboboxList>
-              </ComboboxContent>
-            </Combobox>
-            <Input
-              type="text"
-              value={query}
-              onChange={(e) => {
-                setQuery(e.currentTarget.value)
-              }}
-              placeholder="Search..."
-              className="w-full"
-              autoFocus
-            />
-            {error && <p className="text-sm text-destructive">{error}</p>}
-            {loading ? (
-              <div className="flex items-center justify-center">
-                <Spinner className="h-6 w-6" />
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <ButtonGroup aria-label="Media type" className="shrink-0">
+                {typeOptions.map(({ value, label, icon: Icon }) => {
+                  const active = value === selectedType
+                  return (
+                    <Button
+                      key={value}
+                      type="button"
+                      variant="outline"
+                      aria-pressed={active}
+                      onClick={() => setSelectedType(value)}
+                      className={cn(
+                        active &&
+                          "bg-sky-500/10 text-sky-700 hover:bg-sky-500/15 dark:bg-sky-500/15 dark:text-sky-300"
+                      )}
+                    >
+                      <Icon />
+                      {label}
+                    </Button>
+                  )
+                })}
+              </ButtonGroup>
+              <div className="relative flex-1">
+                <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  type="search"
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.currentTarget.value)
+                  }}
+                  placeholder={`Search ${typeOptions.find((option) => option.value === selectedType)?.label.toLowerCase()}...`}
+                  aria-label="Search media"
+                  className="w-full pl-9"
+                  autoFocus
+                />
               </div>
-            ) : results.length === 0 && query ? (
-              <div className="py-8 text-center">
-                <p className="text-sm text-muted-foreground">No media found</p>
+            </div>
+            {error && (
+              <p
+                role="alert"
+                className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-1.5 text-sm text-destructive"
+              >
+                {error}
+              </p>
+            )}
+            {loading ? (
+              <div className="flex flex-1 items-center justify-center py-8">
+                <Spinner className="size-6 text-sky-600 dark:text-sky-300" />
               </div>
             ) : results.length === 0 ? (
-              <div className="py-8 text-center">
-                <p className="text-sm text-muted-foreground">
-                  Start typing to search
+              <div className="flex flex-1 flex-col items-center justify-center gap-3 py-8 text-center">
+                <span className="flex size-12 items-center justify-center rounded-full border bg-background/60 text-sky-600 dark:text-sky-300">
+                  <Search className="size-5" />
+                </span>
+                <p className="text-xs font-medium tracking-[0.24em] text-muted-foreground uppercase">
+                  {query ? "No media found" : "Start typing to search"}
                 </p>
               </div>
             ) : (
               <div className="relative flex min-h-0 flex-1">
                 <ScrollArea className="flex-1">
-                  <div className="grid grid-cols-2 gap-6">
+                  <div className="grid grid-cols-2 gap-4 p-1 sm:grid-cols-3">
                     {results.map((result) => (
                       <button
                         key={result.id}
+                        type="button"
                         onClick={() => handleSelect(result)}
-                        className="group relative aspect-2/3 overflow-hidden rounded-lg transition-all"
+                        className="group relative aspect-2/3 overflow-hidden rounded-2xl bg-muted text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
                       >
                         <Image
                           unoptimized
-                          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                          sizes="(max-width: 640px) 50vw, 240px"
                           fill
                           priority={false}
                           src={result.posterPath || "/images/placeholder.webp"}
                           alt={result.name}
-                          className="absolute inset-0 h-full w-full object-cover transition-transform group-hover:scale-105"
+                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                           onError={(e) => {
                             e.currentTarget.src = "/images/placeholder.webp"
                           }}
                         />
-                        {/* Text overlay */}
-                        <div className="absolute inset-0 flex items-end bg-linear-to-t from-black/80 to-transparent">
-                          <div className="w-full p-2">
-                            <p className="line-clamp-2 text-sm font-semibold text-white">
+                        <div className="absolute inset-0 flex items-end bg-linear-to-t from-black/85 to-transparent to-60%">
+                          <div className="w-full space-y-1 p-3">
+                            <p className="line-clamp-2 font-serif text-sm leading-snug font-bold text-balance text-white">
                               {result.name}
                             </p>
                             {result.year && (
-                              <p className="mt-1 text-xs text-slate-300">
+                              <p className="font-mono text-xs text-white/70">
                                 {result.year}
                               </p>
                             )}
                           </div>
                         </div>
+                        <span
+                          aria-hidden
+                          className="card-hover-ring pointer-events-none absolute inset-0 rounded-2xl"
+                        />
                       </button>
                     ))}
                   </div>

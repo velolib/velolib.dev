@@ -1,4 +1,5 @@
 import { GridMaker } from "@/components/tools/grid/grid-maker"
+import { PageScroller } from "@/components/layout/page-scroller"
 import { buildOgImageUrl, buildPageMetadata } from "@/lib/seo"
 import { Metadata } from "next"
 
@@ -25,8 +26,8 @@ export const metadata: Metadata = buildPageMetadata({
 
 export default async function Page() {
   return (
-    <>
+    <PageScroller>
       <GridMaker />
-    </>
+    </PageScroller>
   )
 }

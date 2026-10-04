@@ -71,12 +71,14 @@ export default function ReturnToTop() {
       aria-hidden={!visible}
     >
       <Button
-        variant="secondary"
-        size="icon"
+        variant="outline"
+        size="sm"
         onClick={handleClick}
         aria-label="Return to top"
+        className="btn-brand group relative border-transparent bg-background/80 shadow-lg shadow-sky-300/15 backdrop-blur-md hover:bg-sky-300/10 dark:bg-background/80"
       >
-        <ArrowUp className="h-4 w-4" />
+        <ArrowUp className="text-sky-600 transition-transform group-hover:-translate-y-0.5 dark:text-sky-300" />
+        Top
       </Button>
     </div>
   )

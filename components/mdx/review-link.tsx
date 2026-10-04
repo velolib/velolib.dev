@@ -34,9 +34,9 @@ function ReviewPreview({ review }: { review: SlimReview }) {
   const data = review.review
 
   return (
-    <div className="w-96 max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-3xl border bg-background/95 text-left shadow-2xl backdrop-blur-md">
-      <div className="flex items-stretch gap-3 p-3">
-        <div className="relative aspect-[0.68] w-16 shrink-0 overflow-hidden rounded-xl border bg-muted">
+    <div className="image-ring relative w-96 max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-3xl bg-background/95 text-left shadow-2xl shadow-sky-300/15 backdrop-blur-md">
+      <div className="flex items-stretch gap-4 p-4">
+        <div className="image-ring relative aspect-[0.68] w-18 shrink-0 overflow-hidden rounded-xl bg-muted">
           <Image
             src={data.poster}
             alt={`Poster for ${data.title}`}
@@ -47,11 +47,11 @@ function ReviewPreview({ review }: { review: SlimReview }) {
         </div>
 
         <div className="min-w-0 flex-1 space-y-2 py-0.5">
-          <div className="space-y-1">
-            <p className="text-[10px] tracking-[0.3em] text-muted-foreground uppercase">
+          <div className="space-y-1.5">
+            <p className="text-[10px] font-medium tracking-[0.28em] text-sky-600 uppercase dark:text-sky-300">
               {formatCompactDateRange(data.startDate, data.finishDate)}
             </p>
-            <p className="line-clamp-2 text-sm leading-tight font-semibold text-foreground">
+            <p className="line-clamp-2 font-serif text-base leading-snug font-bold text-balance text-foreground">
               {data.title}
             </p>
             {data.aka && data.aka.length > 0 && (
@@ -67,7 +67,7 @@ function ReviewPreview({ review }: { review: SlimReview }) {
         </div>
       </div>
 
-      <div className="space-y-2 border-t px-3 py-3">
+      <div className="space-y-2 border-t px-4 py-3">
         <div className="flex flex-wrap gap-1.5">
           <ReviewBadge
             type="rating"

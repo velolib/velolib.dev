@@ -26,6 +26,16 @@ type TocEntry = {
 }
 
 const headingRegex = /^(#{1,6})\s+(.+)$/gm
+const frontmatterRegex = /^---[\s\S]*?---/
+const WORDS_PER_MINUTE = 200
+
+function getReadingTime(source: string) {
+  const words = source
+    .replace(frontmatterRegex, "")
+    .split(/\s+/)
+    .filter(Boolean)
+  return Math.max(1, Math.ceil(words.length / WORDS_PER_MINUTE))
+}
 
 function extractToc(source: string): TocEntry[] {
   const slugger = new GithubSlugger()
@@ -90,6 +100,7 @@ const posts = defineCollection({
       slug: _meta.filePath.replace(/\.(md|mdx)$/i, ""),
       mdxContent,
       toc: extractToc(source),
+      readingTime: getReadingTime(source),
     }
   },
 })

@@ -5,19 +5,16 @@ interface GradientBackgroundProps {
 export default function GradientBackground({
   inverted,
 }: GradientBackgroundProps) {
+  const top = inverted ? "var(--color-sea-300)" : "var(--color-sky-300)"
+  const bottom = inverted ? "var(--color-sky-300)" : "var(--color-sea-300)"
+
   return (
-    <>
-      {!inverted ? (
-        <>
-          <div className="absolute inset-x-0 top-0 -z-10 h-80 bg-linear-to-t from-transparent to-sky-300/10" />
-          <div className="absolute inset-x-0 bottom-0 -z-10 h-64 bg-linear-to-t from-sea-300/10 to-transparent" />
-        </>
-      ) : (
-        <>
-          <div className="absolute inset-x-0 top-0 -z-10 h-80 bg-linear-to-t from-transparent to-sea-300/10" />
-          <div className="absolute inset-x-0 bottom-0 -z-10 h-80 bg-linear-to-t from-sky-300/10 to-transparent" />
-        </>
-      )}
-    </>
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-0 -z-10 opacity-15 dark:opacity-10"
+      style={{
+        backgroundImage: `radial-gradient(ellipse 80% 420px at 50% 0%, ${top}, transparent 70%), radial-gradient(ellipse 80% 380px at 50% 100%, ${bottom}, transparent 70%)`,
+      }}
+    />
   )
 }

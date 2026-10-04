@@ -4,7 +4,12 @@ export interface SlimPost {
   slug: string
   post: Pick<
     Post,
-    "title" | "description" | "coverImage" | "coverImageAlt" | "pubDate"
+    | "title"
+    | "description"
+    | "coverImage"
+    | "coverImageAlt"
+    | "pubDate"
+    | "readingTime"
   >
 }
 
@@ -39,6 +44,7 @@ export function slimPost(post: Post): SlimPost {
       coverImage: post.coverImage,
       coverImageAlt: post.coverImageAlt,
       pubDate: post.pubDate,
+      readingTime: post.readingTime,
     },
   }
 }

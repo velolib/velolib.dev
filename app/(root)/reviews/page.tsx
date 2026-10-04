@@ -8,6 +8,7 @@ import { slimReview } from "@/lib/content"
 import { SECTIONS } from "@/lib/sections"
 import GradientBackground from "@/components/layout/gradient-background"
 import { buildOgImageUrl, buildPageMetadata } from "@/lib/seo"
+import { PageScroller } from "@/components/layout/page-scroller"
 
 const INITIAL_REVIEW_COUNT = 12
 
@@ -32,7 +33,7 @@ export default function ReviewsPage() {
   const slimReviews = sortedReviews.map(slimReview) satisfies SlimReview[]
 
   return (
-    <main className="relative h-[calc(100dvh-var(--nav-height))] snap-y snap-proximity overflow-x-hidden overflow-y-auto scroll-smooth">
+    <PageScroller>
       <SectionShell
         id="reviews"
         title={SECTIONS.reviews.title}
@@ -45,6 +46,6 @@ export default function ReviewsPage() {
           initialVisibleCount={INITIAL_REVIEW_COUNT}
         />
       </SectionShell>
-    </main>
+    </PageScroller>
   )
 }

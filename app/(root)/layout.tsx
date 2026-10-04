@@ -4,6 +4,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import { ThemeProvider } from "@/components/layout/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Navigation } from "@/components/layout/navigation"
+import { SiteBackground } from "@/components/layout/site-background"
 import { GoogleTagManager } from "@next/third-parties/google"
 import {
   DEFAULT_KEYWORDS,
@@ -65,6 +66,7 @@ export default function RootLayout({
       <body>
         <TooltipProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <SiteBackground />
             <Toaster />
             <Navigation />
             {children}
