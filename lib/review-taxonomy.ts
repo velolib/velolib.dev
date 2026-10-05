@@ -67,32 +67,26 @@ export const REVIEW_IMPACTS = [
   "Forgettable",
 ] as const
 
-export const REVIEW_MEDIA_FILTER_GROUPS = [
+// Facet keys match the ReviewBadge types, so filters reuse their icons and tones.
+export const REVIEW_FILTER_SECTIONS = [
   {
-    label: "Medium",
-    options: REVIEW_MEDIUMS,
+    label: "Media",
+    facets: [
+      { key: "medium", label: "Medium", options: REVIEW_MEDIUMS },
+      { key: "format", label: "Format", options: REVIEW_FORMATS },
+      { key: "genre", label: "Genre", options: REVIEW_GENRES },
+      { key: "status", label: "Status", options: REVIEW_STATUSES },
+    ],
   },
   {
-    label: "Format",
-    options: REVIEW_FORMATS,
-  },
-  {
-    label: "Genres",
-    options: REVIEW_GENRES,
+    label: "Verdict",
+    facets: [
+      { key: "quality", label: "Quality", options: REVIEW_QUALITIES },
+      { key: "enjoyment", label: "Enjoyment", options: REVIEW_ENJOYMENTS },
+      { key: "impact", label: "Impact", options: REVIEW_IMPACTS },
+    ],
   },
 ] as const
 
-export const REVIEW_ASPECT_FILTER_GROUPS = [
-  {
-    label: "Quality",
-    options: REVIEW_QUALITIES,
-  },
-  {
-    label: "Enjoyment",
-    options: REVIEW_ENJOYMENTS,
-  },
-  {
-    label: "Impact",
-    options: REVIEW_IMPACTS,
-  },
-] as const
+export type ReviewFacetKey =
+  (typeof REVIEW_FILTER_SECTIONS)[number]["facets"][number]["key"]
